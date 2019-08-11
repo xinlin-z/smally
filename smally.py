@@ -63,7 +63,8 @@ def jpegtran_jpg(pathname):
     # baseline 
     file_1 = '_1_' + basename
     cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
-    proc = subprocess.run(cmd_1, shell=True, cwd=wd, capture_output=True) 
+    proc = subprocess.run(cmd_1, shell=True, cwd=wd, 
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
     if proc.returncode != 0:
         print('%s: error while jpegtran baseline compression' % NAME)
         print(proc.stderr.decode())
@@ -72,7 +73,8 @@ def jpegtran_jpg(pathname):
     # progressive
     file_2 = '_2_' + basename
     cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
-    proc = subprocess.run(cmd_2, shell=True, cwd=wd, capture_output=True) 
+    proc = subprocess.run(cmd_2, shell=True, cwd=wd, 
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
     if proc.returncode != 0:
         print('%s: error while jpegtran progressive compression' % NAME)
         print(proc.stderr.decode())
@@ -114,7 +116,7 @@ def jpegtran_jpg(pathname):
 
 
 NAME = '[smally]'
-VER = '%s: a picture batch tool for website, V0.08, by pynote.net' % NAME
+VER = '%s: a picture batch tool for website, V0.09, by pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
 SAVED = 0
@@ -164,7 +166,8 @@ def main():
         if PNG or GIF or WEBP:
             print('%s: --jpegtran only support JPG' % NAME)
             return
-        proc = subprocess.run('which jpegtran',shell=True,capture_output=True) 
+        proc = subprocess.run('which jpegtran',shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
         if proc.returncode != 0:
             print('%s: seems jpegtran tool is not there' % NAME)
             print(proc.stderr.decode())

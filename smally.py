@@ -62,19 +62,19 @@ def jpegtran_jpg(pathname):
     wd = os.path.dirname(pathname)
     # baseline 
     file_1 = '_1_' + basename
-    cmd_1 = f'jpegtran -copy none -optimize {basename} > {file_1}'
+    cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
     proc = subprocess.run(cmd_1, shell=True, cwd=wd, capture_output=True) 
     if proc.returncode != 0:
-        print(f'{NAME}: error while jpegtran baseline compression')
+        print('%s: error while jpegtran baseline compression' % NAME)
         print(proc.stderr.decode())
         os.remove(wd+'/'+file_1)
         sys.exit(1)
     # progressive
     file_2 = '_2_' + basename
-    cmd_2 = f'jpegtran -copy none -progressive {basename} > {file_2}'
+    cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
     proc = subprocess.run(cmd_2, shell=True, cwd=wd, capture_output=True) 
     if proc.returncode != 0:
-        print(f'{NAME}: error while jpegtran progressive compression')
+        print('%s: error while jpegtran progressive compression' % NAME)
         print(proc.stderr.decode())
         os.remove(wd+'/'+file_2)
         sys.exit(1)
@@ -106,7 +106,7 @@ def jpegtran_jpg(pathname):
             print('-'+str(size-size_2),'[p]')
             SAVED += size - size_2
     except BaseException as e:
-        print(f'{NAME}: error while rm & mv')
+        print('%s: error while rm & mv' % NAME)
         print(repr(e))
         sys.exit(1)
 
@@ -114,7 +114,7 @@ def jpegtran_jpg(pathname):
 
 
 NAME = '[smally]'
-VER = f'{NAME}: a picture batch tool for website, V0.07, by pynote.net'
+VER = '%s: a picture batch tool for website, V0.08, by pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
 SAVED = 0
@@ -141,7 +141,7 @@ def main():
     # check path
     if (not os.path.isabs(args.abspath) or
         not os.path.exists(args.abspath)):
-        print(f'{NAME}: path must be absolute and existed, support ~')
+        print('%s: path must be absolute and existed, support ~' % NAME)
         return
     # check picture type
     global JPG; global PNG; global GIF; global WEBP
@@ -150,27 +150,27 @@ def main():
     if args.gif: GIF = True
     if args.webp: WEBP = True
     if (JPG or PNG or GIF or WEBP) is False:
-        print(f'{NAME}: no picture type choosed')
+        print('%s: no picture type choosed' % NAME)
         return
     # actions 
     if args.show: walktree(args.abspath, show_file)
     if args.size:
         walktree(args.abspath, size_file)
-        print(f'{NAME}: total size:',str(SIZE)+',',
+        print('%s: total size:'%NAME, str(SIZE)+',',
                 str(round(SIZE/1024,2))+'K,',
                 str(round(SIZE/1024/1024,3))+'M,',
                 str(round(SIZE/1024/1024/1024,4))+'G')
     if args.jpegtran:
         if PNG or GIF or WEBP:
-            print(f'{NAME}: --jpegtran only support JPG')
+            print('%s: --jpegtran only support JPG' % NAME)
             return
         proc = subprocess.run('which jpegtran',shell=True,capture_output=True) 
         if proc.returncode != 0:
-            print(f'{NAME}: seems jpegtran tool is not there')
+            print('%s: seems jpegtran tool is not there' % NAME)
             print(proc.stderr.decode())
             return
         walktree(args.abspath, jpegtran_jpg)
-        print(f'{NAME}: total saved:',str(SAVED)+',',
+        print('%s: total saved:'%NAME, str(SAVED)+',',
                 str(round(SAVED/1024,2))+'K,',
                 str(round(SAVED/1024/1024,3))+'M,',
                 str(round(SAVED/1024/1024/1024,4))+'G')

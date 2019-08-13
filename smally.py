@@ -116,7 +116,8 @@ def jpegtran_jpg(pathname):
 
 
 NAME = '[smally]'
-VER = '%s: a picture batch tool for website, V0.09, by pynote.net' % NAME
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.09 '\
+            'by www.pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
 SAVED = 0

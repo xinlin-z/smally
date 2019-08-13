@@ -1,2 +1,2 @@
 # smally
-A picture batch tool for website
+compress JPGs losslessly in batch mode and more...

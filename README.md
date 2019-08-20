@@ -63,3 +63,4 @@ Compress JPGs losslessly in batch mode:
 ## version
 * 2019-08-19 V0.09
 
+The first release.

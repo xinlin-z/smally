@@ -84,7 +84,9 @@ def jpegtran_jpg(pathname):
     size = os.path.getsize(pathname)
     size_1 = os.path.getsize(wd+'/'+file_1)
     size_2 = os.path.getsize(wd+'/'+file_2)
-    if size <= size_1 and size <= size_2: select_file = 0
+    if size <= size_1 and size <= size_2: 
+        if size == size_2: select_file = 2  # progressive is preferred
+        else: select_file = 0
     else:
         if size_2 <= size_1: select_file = 2  # progressive is preferred
         else: select_file = 1

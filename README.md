@@ -8,6 +8,8 @@ use JPGs as much as possible.
 Smally's highligth function is to compress JPGs losslessly in batch mode.
 Besides, smally also provides a few handy tools to manage pictures.
 
+for Chinese 中文参考：https://www.pynote.net/archives/882
+
 ## how to install smally
 1. You need install jpegtran tool
 2. You need Python3
@@ -63,4 +65,4 @@ Compress JPGs losslessly in batch mode:
 ## version
 * 2019-08-19 V0.09
 
-The first release.
+    The first release.

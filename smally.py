@@ -40,8 +40,7 @@ def walktree(top, call):
 def show_file(pathname):
     """show pathname accordingly"""
     size = os.path.getsize(pathname)
-    if size <= 1024: print(pathname, size)
-    else: print(pathname, str(round(size/1024,2))+'K') 
+    print(pathname, str(round(size/1024,2))+'K') 
     return
 
 

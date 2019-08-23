@@ -52,6 +52,20 @@ def size_file(pathname):
     return
 
 
+def isProgressive(pathname):
+    """check if pathname is progressive jpg format"""
+    cmd = 'identify -verbose %s | grep Interlace' % pathname
+    proc = subprocess.run(cmd, shell=True,  
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+    if proc.returncode != 0:
+        print('%s: error while identify jpg format' % NAME)
+        print(proc.stderr.decode())
+        sys.exit(1)
+    if proc.stdout.decode().find('None') == -1:  # progressive found
+        return True
+    return False
+
+
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
     print(pathname, end=' ')
@@ -85,10 +99,11 @@ def jpegtran_jpg(pathname):
     size_1 = os.path.getsize(wd+'/'+file_1)
     size_2 = os.path.getsize(wd+'/'+file_2)
     if size <= size_1 and size <= size_2: 
-        if size == size_2: select_file = 2  # progressive is preferred
-        else: select_file = 0
+        select_file = 0
+        if size == size_2 and isProgressive(pathname) is False: 
+            select_file = 2  # progressive is preferred
     else:
-        if size_2 <= size_1: select_file = 2  # progressive is preferred
+        if size_2 <= size_1: select_file = 2  
         else: select_file = 1
     # rm & mv
     global SAVED
@@ -96,7 +111,9 @@ def jpegtran_jpg(pathname):
         if select_file == 0:  # origin
             os.remove(wd+'/'+file_1)
             os.remove(wd+'/'+file_2)
-            print('--')
+            if isProgressive(pathname) is True:
+                print('-- [p]')
+            else: print('-- [b]')
         if select_file == 1:  # baseline
             os.remove(pathname)
             os.remove(wd+'/'+file_2)
@@ -118,7 +135,7 @@ def jpegtran_jpg(pathname):
 
 
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.09 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.11 '\
             'by www.pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
@@ -169,10 +186,18 @@ def main():
         if PNG or GIF or WEBP:
             print('%s: --jpegtran only support JPG' % NAME)
             return
+        # which jpegtran
         proc = subprocess.run('which jpegtran',shell=True,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
         if proc.returncode != 0:
             print('%s: seems jpegtran tool is not there' % NAME)
+            print(proc.stderr.decode())
+            return
+        # which identify
+        proc = subprocess.run('which identify',shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+        if proc.returncode != 0:
+            print('%s: seems identify tool is not there' % NAME)
             print(proc.stderr.decode())
             return
         walktree(args.abspath, jpegtran_jpg)

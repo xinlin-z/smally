@@ -12,7 +12,7 @@ few handy tools to manage pictures for webmaster.
 For Chinese 中文参考：https://www.pynote.net/archives/882
 
 ## how to install
-1. You need to make sure *jpegtran* and *identify* can be found in $PATH
+1. You need to make sure **jpegtran** and **identify** can be found in $PATH
 2. You need Python3
 3. git clone https://github.com/xinlin-z/smally
 4. Good to go ...
@@ -135,13 +135,13 @@ Compress JPGs losslessly in batch mode:
     [smally]: total saved: 48912, 47.77K, 0.047M, 0.0G
 
 ## version
-* 2019-08-24 V0.12
+* **2019-08-24 V0.12**
 
     1. add width x height info in show cmd
     2. optimize algo
     3. update readme.md
     4. tweaks and bugfix
 
-* 2019-08-19 V0.09
+* **2019-08-19 V0.09**
 
     The first release.

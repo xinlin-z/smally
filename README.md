@@ -140,13 +140,13 @@ Compress JPGs losslessly in batch mode:
     /home/pynote.net/pic/logo.jpg -727 [p]
     [smally]: total saved: 48912, 47.77K, 0.047M, 0.0G
 
--- means no change
+**--** means no change
 
--xxx means how mang bytes saved
+**-xxx** means how mang bytes saved
 
-[b] means to choose baseline JPG format finally
+**[b]** means to choose baseline JPG format finally
 
-[p] means to choose progressive JPG format finally
+**[p]** means to choose progressive JPG format finally
 
 ## version
 * **2019-08-24 V0.12**

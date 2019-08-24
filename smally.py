@@ -146,8 +146,20 @@ def jpegtran_jpg(pathname):
     return 
 
 
+def which_cmd(cmd):
+    """use which to check if cmd is in $PATH"""
+    cmd_str = 'which %s' % cmd
+    proc = subprocess.run(cmd_str, shell=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+    if proc.returncode != 0:
+        print('%s: %s can not find in $PATH ' % (NAME,cmd))
+        print(proc.stderr.decode())
+        return False
+    return True
+
+
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.11 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.12 '\
             'by www.pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
@@ -188,13 +200,7 @@ def main():
         return
     # actions 
     if args.show: 
-        # which identify
-        proc = subprocess.run('which identify',shell=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-        if proc.returncode != 0:
-            print('%s: seems identify tool is not there' % NAME)
-            print(proc.stderr.decode())
-            return
+        if which_cmd('identify') is False: return
         walktree(args.abspath, show_file)
     if args.size:
         walktree(args.abspath, size_file)
@@ -206,20 +212,8 @@ def main():
         if PNG or GIF or WEBP:
             print('%s: --jpegtran only support JPG' % NAME)
             return
-        # which jpegtran
-        proc = subprocess.run('which jpegtran',shell=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-        if proc.returncode != 0:
-            print('%s: seems jpegtran tool is not there' % NAME)
-            print(proc.stderr.decode())
-            return
-        # which identify
-        proc = subprocess.run('which identify',shell=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-        if proc.returncode != 0:
-            print('%s: seems identify tool is not there' % NAME)
-            print(proc.stderr.decode())
-            return
+        if which_cmd('jpegtran') is False: return
+        if which_cmd('identify') is False: return
         walktree(args.abspath, jpegtran_jpg)
         print('%s: total saved:'%NAME, str(SAVED)+',',
                 str(round(SAVED/1024,2))+'K,',

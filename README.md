@@ -11,6 +11,12 @@ few handy tools to manage pictures for webmaster.
 
 For Chinese 中文参考：https://www.pynote.net/archives/882
 
+## JPG lossless compression algorithm
+1. use jpegtran to reduce all metadata in JPG file
+2. compare the original file, baseline format and progressive format file,
+choose the smallest one
+3. when possible, choose progressive format version
+
 ## how to install
 1. You need to make sure **jpegtran** and **identify** can be found in $PATH
 2. You need Python3
@@ -133,6 +139,14 @@ Compress JPGs losslessly in batch mode:
     /home/pynote.net/pic/404.jpg -- [p]
     /home/pynote.net/pic/logo.jpg -727 [p]
     [smally]: total saved: 48912, 47.77K, 0.047M, 0.0G
+
+-- means no change
+
+-xxx means how mang bytes saved
+
+[b] means to choose baseline JPG format finally
+
+[p] means to choose progressive JPG format finally
 
 ## version
 * **2019-08-24 V0.12**

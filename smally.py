@@ -176,7 +176,7 @@ def main():
     # group for action type
     actType = parser.add_mutually_exclusive_group(required=True)
     actType.add_argument('--show', action='store_true',
-                        help='show pathname and size in bytes')
+                        help='show pathname and size in KB')
     actType.add_argument('--size', action='store_true',
                         help='calculate total size')
     actType.add_argument('--jpegtran', action='store_true',

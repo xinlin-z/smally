@@ -37,10 +37,23 @@ def walktree(top, call):
     return
     
 
+def getWH(pathname):
+    """get picture's width x height in pixel"""
+    cmd = 'identify %s | cut -d" " -f 3 | head -n1' % pathname
+    proc = subprocess.run(cmd, shell=True,  
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+    if proc.returncode != 0:
+        print('%s: error while identify jpg width x height' % NAME)
+        print(proc.stderr.decode())
+        sys.exit(1)
+    wh = proc.stdout.decode()
+    return wh[:len(wh)-1]
+
+
 def show_file(pathname):
     """show pathname accordingly"""
     size = os.path.getsize(pathname)
-    print(pathname, str(round(size/1024,2))+'K') 
+    print(pathname, getWH(pathname), str(round(size/1024,2))+'K') 
     return
 
 
@@ -174,7 +187,15 @@ def main():
         print('%s: no picture type choosed' % NAME)
         return
     # actions 
-    if args.show: walktree(args.abspath, show_file)
+    if args.show: 
+        # which identify
+        proc = subprocess.run('which identify',shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+        if proc.returncode != 0:
+            print('%s: seems identify tool is not there' % NAME)
+            print(proc.stderr.decode())
+            return
+        walktree(args.abspath, show_file)
     if args.size:
         walktree(args.abspath, size_file)
         print('%s: total size:'%NAME, str(SIZE)+',',

@@ -81,6 +81,7 @@ def isProgressive(pathname):
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
     print(pathname, end=' ')
+    global TOTAL_NUM; TOTAL_NUM += 1 
     basename = os.path.basename(pathname)
     if basename[0] == '-':
         print('skip due to file name')
@@ -126,6 +127,7 @@ def jpegtran_jpg(pathname):
             if isProgressive(pathname) is True:
                 print('-- [p]')
             else: print('-- [b]')
+        else: global COMP_NUM; COMP_NUM += 1 
         if select_file == 1:  # baseline
             os.remove(pathname)
             os.remove(wd+'/'+file_2)
@@ -164,6 +166,7 @@ VER = '%s: compress JPGs losslessly in batch mode and more... V0.12 '\
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0
 SAVED = 0
+TOTAL_NUM = 0; COMP_NUM = 0
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--abspath', required=True, 
@@ -218,7 +221,8 @@ def main():
         print('%s: total saved:'%NAME, str(SAVED)+',',
                 str(round(SAVED/1024,2))+'K,',
                 str(round(SAVED/1024/1024,3))+'M,',
-                str(round(SAVED/1024/1024/1024,4))+'G')
+                str(round(SAVED/1024/1024/1024,4))+'G,',
+                str(COMP_NUM)+'/'+str(TOTAL_NUM))
 
     return
 

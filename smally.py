@@ -35,18 +35,25 @@ def walktree(top, call):
             if file_ext == '.webp' and WEBP == True:
                 call(pathname)
     return
+
     
+def _shell_cmd(cmd, cwd=None):
+    """execute a shell cmd,
+    return returncode, stdout, stderr"""
+    proc = subprocess.run(cmd, shell=True, cwd=cwd, 
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return proc.returncode, proc.stdout, proc.stderr
+
 
 def getWH(pathname):
     """get picture's width x height in pixel"""
     cmd = 'identify %s | cut -d" " -f 3 | head -n1' % pathname
-    proc = subprocess.run(cmd, shell=True,  
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    if proc.returncode != 0:
+    rcode, out, err = _shell_cmd(cmd)
+    if rcode != 0:
         print('%s: error while identify jpg width x height' % NAME)
-        print(proc.stderr.decode())
+        print(err.decode())
         sys.exit(1)
-    wh = proc.stdout.decode()
+    wh = out.decode()
     return wh[:len(wh)-1]
 
 
@@ -67,13 +74,12 @@ def size_file(pathname):
 def isProgressive(pathname):
     """check if pathname is progressive jpg format"""
     cmd = 'identify -verbose %s | grep Interlace' % pathname
-    proc = subprocess.run(cmd, shell=True,  
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    if proc.returncode != 0:
+    rcode, out, err = _shell_cmd(cmd)
+    if rcode != 0:
         print('%s: error while identify jpg format' % NAME)
-        print(proc.stderr.decode())
+        print(err.decode())
         sys.exit(1)
-    if proc.stdout.decode().find('None') == -1:  # progressive found
+    if out.decode().find('None') == -1:  # progressive found
         return True
     return False
 
@@ -90,21 +96,19 @@ def jpegtran_jpg(pathname):
     # baseline 
     file_1 = '_1_' + basename
     cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
-    proc = subprocess.run(cmd_1, shell=True, cwd=wd, 
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    if proc.returncode != 0:
+    rcode, _, err = _shell_cmd(cmd_1, wd)
+    if rcode != 0:
         print('%s: error while jpegtran baseline compression' % NAME)
-        print(proc.stderr.decode())
+        print(err.decode())
         os.remove(wd+'/'+file_1)
         sys.exit(1)
     # progressive
     file_2 = '_2_' + basename
     cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
-    proc = subprocess.run(cmd_2, shell=True, cwd=wd, 
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    if proc.returncode != 0:
+    rcode, _, err = _shell_cmd(cmd_2, wd)
+    if rcode != 0:
         print('%s: error while jpegtran progressive compression' % NAME)
-        print(proc.stderr.decode())
+        print(err.decode())
         os.remove(wd+'/'+file_2)
         sys.exit(1)
     # choose the smallest one
@@ -151,17 +155,16 @@ def jpegtran_jpg(pathname):
 def which_cmd(cmd):
     """use which to check if cmd is in $PATH"""
     cmd_str = 'which %s' % cmd
-    proc = subprocess.run(cmd_str, shell=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    if proc.returncode != 0:
+    rcode, _, err = _shell_cmd(cmd_str)
+    if rcode != 0:
         print('%s: %s can not find in $PATH ' % (NAME,cmd))
-        print(proc.stderr.decode())
+        print(err.decode())
         return False
     return True
 
 
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.12 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.13 '\
             'by www.pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0

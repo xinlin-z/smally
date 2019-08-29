@@ -194,7 +194,7 @@ def main():
     if (not os.path.isabs(args.abspath) or
         not os.path.exists(args.abspath)):
         print('%s: path must be absolute and existed, support ~' % NAME)
-        return
+        sys.exit(1)
     # check picture type
     global JPG; global PNG; global GIF; global WEBP
     if args.jpg: JPG = True
@@ -203,10 +203,10 @@ def main():
     if args.webp: WEBP = True
     if (JPG or PNG or GIF or WEBP) is False:
         print('%s: no picture type choosed' % NAME)
-        return
+        sys.exit(1)
     # actions 
     if args.show: 
-        if which_cmd('identify') is False: return
+        if which_cmd('identify') is False: sys.exit(1) 
         walktree(args.abspath, show_file)
     if args.size:
         walktree(args.abspath, size_file)
@@ -217,9 +217,9 @@ def main():
     if args.jpegtran:
         if PNG or GIF or WEBP:
             print('%s: --jpegtran only support JPG' % NAME)
-            return
-        if which_cmd('jpegtran') is False: return
-        if which_cmd('identify') is False: return
+            sys.exit(1)
+        if which_cmd('jpegtran') is False: sys.exit(1)
+        if which_cmd('identify') is False: sys.exit(1)
         walktree(args.abspath, jpegtran_jpg)
         print('%s: total saved:'%NAME, str(SAVED)+',',
                 str(round(SAVED/1024,2))+'K,',

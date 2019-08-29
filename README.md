@@ -9,7 +9,7 @@ Smally's highlight feature is to compress JPGs losslessly in batch mode, while
 choose progressive format file when it's possible. Besides, smally provides a 
 few handy tools to manage pictures for webmaster.
 
-For Chinese 中文参考：https://www.pynote.net/archives/882
+**For Chinese 中文参考：https://www.pynote.net/archives/882**
 
 ## JPG lossless compression algorithm
 1. use jpegtran to reduce all metadata in JPG file
@@ -21,7 +21,7 @@ choose the smallest one
 1. You need to make sure **jpegtran** and **identify** can be found in $PATH
 2. You need Python3
 3. git clone https://github.com/xinlin-z/smally
-4. Good to go ...
+Then, you are good to go ...
 
 ## how to use
 ### get help
@@ -31,6 +31,24 @@ choose the smallest one
 Show JPGs' info only:    
 
     $ python3 smally.py -a ~/path/to/pic --show --jpg
+    /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg 400x224 18.37K
+    /home/pic/uploads/2019/01/stepstone-768x512.jpg 768x512 94.33K
+    /home/pic/uploads/2019/01/ieee754-2008-200x112.jpg 200x112 6.29K
+    /home/pic/uploads/2019/01/stepstone.jpg 1000x667 119.69K
+    /home/pic/uploads/2019/01/heshu.jpg 500x314 40.68K
+    /home/pic/uploads/2019/01/ieee754-2008.jpg 593x332 34.62K
+    /home/pic/uploads/2019/01/git.jpg 200x150 6.4K
+    /home/pic/uploads/2019/01/stepstone-200x133.jpg 200x133 11.09K
+    /home/pic/uploads/2019/01/zhangdie.jpg 490x854 67.49K
+    /home/pic/uploads/2019/01/heshu-200x126.jpg 200x126 10.73K
+    /home/pic/uploads/2019/01/zhangdie-400x697.jpg 400x697 43.32K
+    /home/pic/uploads/2019/01/juanji-400x257.jpg 400x257 15.08K
+    /home/pic/uploads/2019/01/zhangdie-86x150.jpg 86x150 3.97K
+    /home/pic/uploads/2019/01/heshu-400x251.jpg 400x251 29.86K
+    /home/pic/uploads/2019/01/stepstone-400x267.jpg 400x267 34.39K
+    /home/pic/uploads/2019/01/juanji.jpg 662x426 27.96K
+    /home/pic/uploads/2019/01/juanji-200x129.jpg 200x129 6.26K
+
 
 Show Both JPGs and PNGs:
     
@@ -69,76 +87,25 @@ You can not use smally to get a single picture's size, please use ls -l.
 Compress JPGs losslessly in batch mode:
 
     $ python3 smally.py -a ~/path/to/pic --jpegtran --jpg
-    /home/pynote.net/pic/uploads/2019/06/wepy-200x103.jpg -523 [p]
-    /home/pynote.net/pic/uploads/2019/06/use_python.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/06/use_python-400x432.jpg -892 [b]
-    /home/pynote.net/pic/uploads/2019/06/python-logo-400x140.jpg -753 [b]
-    /home/pynote.net/pic/uploads/2019/06/tim_peters-400x351.jpg -1121 [p]
-    /home/pynote.net/pic/uploads/2019/06/guido_van_rossum.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/06/rot13.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/06/tim_peters.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/06/python_logo.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/06/import_this-400x405.jpg -1006 [b]
-    /home/pynote.net/pic/uploads/2019/06/import_this.jpg -- [b]
-    /home/pynote.net/pic/uploads/2019/06/python_logo-200x56.jpg -689 [p]
-    /home/pynote.net/pic/uploads/2019/06/use_python-139x150.jpg -406 [b]
-    /home/pynote.net/pic/uploads/2019/06/wepy.jpg -489 [p]
-    /home/pynote.net/pic/uploads/2019/06/rot13-400x243.jpg -2561 [p]
-    /home/pynote.net/pic/uploads/2019/06/tim_peters-171x150.jpg -434 [p]
-    /home/pynote.net/pic/uploads/2019/06/import_this-148x150.jpg -476 [b]
-    /home/pynote.net/pic/uploads/2019/06/python-logo-200x70.jpg -420 [b]
-    /home/pynote.net/pic/uploads/2019/06/rot13-200x122.jpg -755 [p]
-    /home/pynote.net/pic/uploads/2019/06/guido_van_rossum-200x134.jpg -426 [p]
-    /home/pynote.net/pic/uploads/2019/06/python-logo.jpg -174 [b]
-    /home/pynote.net/pic/uploads/2019/06/python_logo-400x112.jpg -1499 [p]
-    /home/pynote.net/pic/uploads/2019/08/xlrd_test_xls-200x108.jpg -581 [b]
-    /home/pynote.net/pic/uploads/2019/08/xlrd_test_xls-400x217.jpg -2003 [p]
-    /home/pynote.net/pic/uploads/2019/08/liang.jpg -492 [p]
-    /home/pynote.net/pic/uploads/2019/08/email_reply_to-400x600.jpg -5364 [p]
-    /home/pynote.net/pic/uploads/2019/08/ren-200x140.jpg -469 [p]
-    /home/pynote.net/pic/uploads/2019/08/merged_cells.jpg -143 [b]
-    /home/pynote.net/pic/uploads/2019/08/liang-200x128.jpg -391 [b]
-    /home/pynote.net/pic/uploads/2019/08/email_reply_to-100x150.jpg -480 [b]
-    /home/pynote.net/pic/uploads/2019/08/ren.jpg -1640 [p]
-    /home/pynote.net/pic/uploads/2019/08/email_reply_to.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/xlrd_test_xls.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/merged_cells-200x112.jpg -603 [b]
-    /home/pynote.net/pic/uploads/2019/08/flower.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/picture.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/email_html.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/email_html-169x150.jpg -577 [p]
-    /home/pynote.net/pic/uploads/2019/08/email_html-400x356.jpg -2276 [p]
-    /home/pynote.net/pic/uploads/2019/08/email_plain.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/08/email_plain-200x135.jpg -892 [b]
-    /home/pynote.net/pic/uploads/2019/08/email_plain-400x269.jpg -2088 [p]
-    /home/pynote.net/pic/uploads/2019/07/dotpy-150x150.jpg -709 [b]
-    /home/pynote.net/pic/uploads/2019/07/python-logo5-200x65.jpg -471 [b]
-    /home/pynote.net/pic/uploads/2019/07/email_diff_mime-71x150.jpg -387 [b]
-    /home/pynote.net/pic/uploads/2019/07/email_jpg_attach-400x492.jpg -2184 [p]
-    /home/pynote.net/pic/uploads/2019/07/python-logo5.jpg -146 [b]
-    /home/pynote.net/pic/uploads/2019/07/python_code-200x100.jpg -573 [p]
-    /home/pynote.net/pic/uploads/2019/07/metro-200x133.jpg -843 [p]
-    /home/pynote.net/pic/uploads/2019/07/email_addr.jpg -- [b]
-    /home/pynote.net/pic/uploads/2019/07/two_jpg_email-400x589.jpg -3053 [p]
-    /home/pynote.net/pic/uploads/2019/07/email_name_addr-200x41.jpg -536 [b]
-    /home/pynote.net/pic/uploads/2019/07/two_jpg_email-102x150.jpg -400 [b]
-    /home/pynote.net/pic/uploads/2019/07/dotpy.jpg -962 [b]
-    /home/pynote.net/pic/uploads/2019/07/email_name_addr.jpg -6 [b]
-    /home/pynote.net/pic/uploads/2019/07/email.jpg -- [b]
-    /home/pynote.net/pic/uploads/2019/07/email_jpg_attach.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/07/two_jpg_email.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/07/email_pic-114x150.jpg -426 [b]
-    /home/pynote.net/pic/uploads/2019/07/email_addr-200x102.jpg -517 [p]
-    /home/pynote.net/pic/uploads/2019/07/email_diff_mime-400x840.jpg -4214 [p]
-    /home/pynote.net/pic/uploads/2019/07/email_pic.jpg -- [p]
-    /home/pynote.net/pic/uploads/2019/07/email_jpg_attach-122x150.jpg -448 [b]
-    /home/pynote.net/pic/uploads/2019/07/python_code.jpg -- [b]
-    /home/pynote.net/pic/uploads/2019/07/metro.jpg -1348 [p]
-    /home/pynote.net/pic/uploads/2019/07/email_diff_mime.jpg -- [p]
-    /home/pynote.net/pic/goTop.jpg -339 [b]
-    /home/pynote.net/pic/404.jpg -- [p]
-    /home/pynote.net/pic/logo.jpg -727 [p]
-    [smally]: total saved: 48912, 47.77K, 0.047M, 0.0G
+    /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg -2040 [p]
+    /home/pic/uploads/2019/01/stepstone-768x512.jpg -6058 [p]
+    /home/pic/uploads/2019/01/ieee754-2008-200x112.jpg -713 [b]
+    /home/pic/uploads/2019/01/stepstone.jpg -2818 [p]
+    /home/pic/uploads/2019/01/heshu.jpg -5562 [p]
+    /home/pic/uploads/2019/01/ieee754-2008.jpg -4737 [p]
+    /home/pic/uploads/2019/01/git.jpg -729 [b]
+    /home/pic/uploads/2019/01/stepstone-200x133.jpg -952 [p]
+    /home/pic/uploads/2019/01/zhangdie.jpg -6114 [p]
+    /home/pic/uploads/2019/01/heshu-200x126.jpg -989 [p]
+    /home/pic/uploads/2019/01/zhangdie-400x697.jpg -3855 [p]
+    /home/pic/uploads/2019/01/juanji-400x257.jpg -1866 [p]
+    /home/pic/uploads/2019/01/zhangdie-86x150.jpg -412 [b]
+    /home/pic/uploads/2019/01/heshu-400x251.jpg -3515 [p]
+    /home/pic/uploads/2019/01/stepstone-400x267.jpg -2702 [p]
+    /home/pic/uploads/2019/01/juanji.jpg -3764 [p]
+    /home/pic/uploads/2019/01/juanji-200x129.jpg -691 [b]
+    [smally]: total saved: 47517, 46.4K, 0.045M, 0.0G, 17/17
+
 
 **--** means no change
 
@@ -148,7 +115,22 @@ Compress JPGs losslessly in batch mode:
 
 **[p]** means to choose progressive JPG format finally
 
+n/m means there are total m pictures and n of them are just compressed 
+
+Only show info of compressed:
+
+    $ python3 smally.py -a ~/path/to/pic --jpegtran --jpg | \
+            grep -E "\s-[0-9]{1,}\s"
+
+
 ## version
+
+* **2019-08-29 V0.15**
+
+    1. count the number of compressed jpg
+    2. change several return to sys.exit(1)
+    3. tweaks
+
 * **2019-08-24 V0.12**
 
     1. add width x height info in show cmd

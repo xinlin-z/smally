@@ -21,6 +21,7 @@ choose the smallest one
 1. You need to make sure **jpegtran** and **identify** can be found in $PATH
 2. You need Python3
 3. git clone https://github.com/xinlin-z/smally
+
 Then, you are good to go ...
 
 ## how to use

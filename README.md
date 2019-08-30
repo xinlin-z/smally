@@ -126,7 +126,7 @@ Only show info of compressed:
 
 ## version
 
-* **2019-08-29 V0.15**
+* **2019-08-30 V0.15**
 
     1. count the number of compressed jpg
     2. change several return to sys.exit(1)

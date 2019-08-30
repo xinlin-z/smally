@@ -164,7 +164,7 @@ def which_cmd(cmd):
 
 
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.13 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.15 '\
             'by www.pynote.net' % NAME
 JPG = False; PNG = False; GIF = False; WEBP = False
 SIZE = 0

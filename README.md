@@ -66,7 +66,7 @@ Show how many JPGs you have:
 
 Show your Top10 PNG picture in size:
 
-    $ python3 smally.py -a ~/path/to/pic --show --png | sort -k2nr | head
+    $ python3 smally.py -a ~/path/to/pic --show --png | sort -k3nr | head
 
 Show all your JPGs which are bigger than 1000K:
 

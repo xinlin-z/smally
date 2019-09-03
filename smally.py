@@ -110,6 +110,7 @@ def jpegtran_jpg(pathname):
         print('%s: error while jpegtran progressive compression' % NAME)
         print(err.decode())
         os.remove(wd+'/'+file_2)
+        os.remove(wd+'/'+file_1)  # delete temp file_1
         sys.exit(1)
     # choose the smallest one
     size = os.path.getsize(pathname)

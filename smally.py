@@ -26,13 +26,13 @@ def walktree(top, call):
             # get file extension
             _, file_ext = os.path.splitext(pathname)
             # call
-            if (file_ext == '.jpg' or file_ext == '.jpeg') and JPG == True:
+            if (file_ext == '.jpg' or file_ext == '.jpeg') and gJPG == True:
                 call(pathname)
-            if file_ext == '.png' and PNG == True:
+            if file_ext == '.png' and gPNG == True:
                 call(pathname)
-            if file_ext == '.gif' and GIF == True:
+            if file_ext == '.gif' and gGIF == True:
                 call(pathname)
-            if file_ext == '.webp' and WEBP == True:
+            if file_ext == '.webp' and gWEBP == True:
                 call(pathname)
     return
 
@@ -66,8 +66,8 @@ def show_file(pathname):
 
 def size_file(pathname):
     """calculate total size of picture choosed"""
-    global SIZE
-    SIZE += os.path.getsize(pathname)
+    global gSize
+    gSize += os.path.getsize(pathname)
     return
 
 
@@ -87,7 +87,7 @@ def isProgressive(pathname):
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
     print(pathname, end=' ')
-    global TOTAL_JPG_NUM; TOTAL_JPG_NUM += 1 
+    global gTotalJpgNum; gTotalJpgNum += 1 
     basename = os.path.basename(pathname)
     if basename[0] == '-':
         print('skip due to file name')
@@ -124,7 +124,7 @@ def jpegtran_jpg(pathname):
         if size_2 <= size_1: select_file = 2  
         else: select_file = 1
     # rm & mv
-    global SAVED
+    global gSaved
     try:
         if select_file == 0:  # origin
             os.remove(wd+'/'+file_1)
@@ -132,19 +132,19 @@ def jpegtran_jpg(pathname):
             if isProgressive(pathname) is True:
                 print('-- [p]')
             else: print('-- [b]')
-        else: global COMP_JPG_NUM; COMP_JPG_NUM += 1 
+        else: global gCompJpgNum; gCompJpgNum += 1 
         if select_file == 1:  # baseline
             os.remove(pathname)
             os.remove(wd+'/'+file_2)
             os.rename(wd+'/'+file_1, pathname)
             print('-'+str(size-size_1),'[b]')
-            SAVED += size - size_1
+            gSaved += size - size_1
         if select_file == 2:  # progressive
             os.remove(pathname)
             os.remove(wd+'/'+file_1)
             os.rename(wd+'/'+file_2, pathname)
             print('-'+str(size-size_2),'[p]')
-            SAVED += size - size_2
+            gSaved += size - size_2
     except BaseException as e:
         print('%s: error while rm & mv' % NAME)
         print(repr(e))
@@ -167,10 +167,10 @@ def which_cmd(cmd):
 NAME = '[smally]'
 VER = '%s: compress JPGs losslessly in batch mode and more... V0.15 '\
             'by www.pynote.net' % NAME
-JPG = False; PNG = False; GIF = False; WEBP = False
-SIZE = 0
-SAVED = 0
-TOTAL_JPG_NUM = 0; COMP_JPG_NUM = 0
+gJPG = False; gPNG = False; gGIF = False; gWEBP = False
+gSize = 0
+gSaved = 0
+gTotalJpgNum = 0; gCompJpgNum = 0
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--abspath', required=True, 
@@ -197,12 +197,12 @@ def main():
         print('%s: path must be absolute and existed, support ~' % NAME)
         sys.exit(1)
     # check picture type
-    global JPG; global PNG; global GIF; global WEBP
-    if args.jpg: JPG = True
-    if args.png: PNG = True
-    if args.gif: GIF = True
-    if args.webp: WEBP = True
-    if (JPG or PNG or GIF or WEBP) is False:
+    global gJPG; global gPNG; global gGIF; global gWEBP
+    if args.jpg: gJPG = True
+    if args.png: gPNG = True
+    if args.gif: gGIF = True
+    if args.webp: gWEBP = True
+    if (gJPG or gPNG or gGIF or gWEBP) is False:
         print('%s: no picture type choosed' % NAME)
         sys.exit(1)
     # actions 
@@ -211,22 +211,22 @@ def main():
         walktree(args.abspath, show_file)
     if args.size:
         walktree(args.abspath, size_file)
-        print('%s: total size:'%NAME, str(SIZE)+',',
-                str(round(SIZE/1024,2))+'K,',
-                str(round(SIZE/1024/1024,3))+'M,',
-                str(round(SIZE/1024/1024/1024,4))+'G')
+        print('%s: total size:'%NAME, str(gSize)+',',
+                str(round(gSize/1024,2))+'K,',
+                str(round(gSize/1024/1024,3))+'M,',
+                str(round(gSize/1024/1024/1024,4))+'G')
     if args.jpegtran:
-        if PNG or GIF or WEBP:
+        if gPNG or gGIF or gWEBP:
             print('%s: --jpegtran only support JPG' % NAME)
             sys.exit(1)
         if which_cmd('jpegtran') is False: sys.exit(1)
         if which_cmd('identify') is False: sys.exit(1)
         walktree(args.abspath, jpegtran_jpg)
-        print('%s: total saved:'%NAME, str(SAVED)+',',
-                str(round(SAVED/1024,2))+'K,',
-                str(round(SAVED/1024/1024,3))+'M,',
-                str(round(SAVED/1024/1024/1024,4))+'G,',
-                str(COMP_JPG_NUM)+'/'+str(TOTAL_JPG_NUM))
+        print('%s: total saved:'%NAME, str(gSaved)+',',
+                str(round(gSaved/1024,2))+'K,',
+                str(round(gSaved/1024/1024,3))+'M,',
+                str(round(gSaved/1024/1024/1024,4))+'G,',
+                str(gCompJpgNum)+'/'+str(gTotalJpgNum))
 
     return
 

@@ -6,6 +6,12 @@ from stat import *
 import subprocess
 
 
+# contants
+NAME = '[smally]'
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.15 '\
+            'by www.pynote.net' % NAME
+
+
 def walktree(top, call):
     """walk file tree from position top, 
     for each file, callback is called.
@@ -45,7 +51,7 @@ def _shell_cmd(cmd, cwd=None):
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def getWH(pathname):
+def getWxH(pathname):
     """get picture's width x height in pixel"""
     cmd = 'identify %s | cut -d" " -f 3 | head -n1' % pathname
     rcode, out, err = _shell_cmd(cmd)
@@ -60,7 +66,7 @@ def getWH(pathname):
 def show_file(pathname):
     """show pathname accordingly"""
     size = os.path.getsize(pathname)
-    print(pathname, getWH(pathname), str(round(size/1024,2))+'K') 
+    print(pathname, getWxH(pathname), str(round(size/1024,2))+'K') 
     return
 
 
@@ -164,13 +170,6 @@ def which_cmd(cmd):
     return True
 
 
-NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.15 '\
-            'by www.pynote.net' % NAME
-gJPG = False; gPNG = False; gGIF = False; gWEBP = False
-gSize = 0
-gSaved = 0
-gTotalJpgNum = 0; gCompJpgNum = 0
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--abspath', required=True, 
@@ -232,6 +231,11 @@ def main():
 
 
 if __name__ == '__main__':
+    # globals
+    gJPG = False; gPNG = False; gGIF = False; gWEBP = False
+    gSize = 0
+    gSaved = 0
+    gTotalJpgNum = 0; gCompJpgNum = 0
     main()
 
 

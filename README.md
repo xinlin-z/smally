@@ -1,5 +1,5 @@
 # smally
-compress JPGs losslessly in batch mode and more...
+compress JPG losslessly in batch mode and more...
 
 The requirements for smally is mainly from the picture management and 
 optimization of website. The core requirement for website is speed, and the 

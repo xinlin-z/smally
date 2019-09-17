@@ -143,14 +143,16 @@ def jpegtran_jpg(pathname):
             os.remove(pathname)
             os.remove(wd+'/'+file_2)
             os.rename(wd+'/'+file_1, pathname)
-            print('-'+str(size-size_1),'[b]')
-            gSaved += size - size_1
+            saved = size - size_1
+            print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[b]')
+            gSaved += saved
         if select_file == 2:  # progressive
             os.remove(pathname)
             os.remove(wd+'/'+file_1)
             os.rename(wd+'/'+file_2, pathname)
-            print('-'+str(size-size_2),'[p]')
-            gSaved += size - size_2
+            saved = size - size_2
+            print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[p]')
+            gSaved += saved
     except BaseException as e:
         print('%s: error while rm & mv' % NAME)
         print(repr(e))

@@ -9,7 +9,7 @@ Smally's highlight feature is to compress JPGs losslessly in batch mode, while
 choose progressive format file when it's possible. Besides, smally provides a 
 few handy tools to manage pictures for webmaster.
 
-**For Chinese 中文参考：https://www.pynote.net/archives/882**
+**中文参考：https://www.pynote.net/archives/882**
 
 ## JPG lossless compression algorithm
 1. use jpegtran to reduce all metadata in JPG file
@@ -88,35 +88,48 @@ You can not use smally to get a single picture's size, please use ls -l.
 Compress JPGs losslessly in batch mode:
 
     $ python3 smally.py -a ~/path/to/pic --jpegtran --jpg
-    /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg -2040 [p]
-    /home/pic/uploads/2019/01/stepstone-768x512.jpg -6058 [p]
-    /home/pic/uploads/2019/01/ieee754-2008-200x112.jpg -713 [b]
-    /home/pic/uploads/2019/01/stepstone.jpg -2818 [p]
-    /home/pic/uploads/2019/01/heshu.jpg -5562 [p]
-    /home/pic/uploads/2019/01/ieee754-2008.jpg -4737 [p]
-    /home/pic/uploads/2019/01/git.jpg -729 [b]
-    /home/pic/uploads/2019/01/stepstone-200x133.jpg -952 [p]
-    /home/pic/uploads/2019/01/zhangdie.jpg -6114 [p]
-    /home/pic/uploads/2019/01/heshu-200x126.jpg -989 [p]
-    /home/pic/uploads/2019/01/zhangdie-400x697.jpg -3855 [p]
-    /home/pic/uploads/2019/01/juanji-400x257.jpg -1866 [p]
-    /home/pic/uploads/2019/01/zhangdie-86x150.jpg -412 [b]
-    /home/pic/uploads/2019/01/heshu-400x251.jpg -3515 [p]
-    /home/pic/uploads/2019/01/stepstone-400x267.jpg -2702 [p]
-    /home/pic/uploads/2019/01/juanji.jpg -3764 [p]
-    /home/pic/uploads/2019/01/juanji-200x129.jpg -691 [b]
-    [smally]: total saved: 47517, 46.4K, 0.045M, 0.0G, 17/17
+    /pics/vim_cheat_sheet.jpg -- [p]
+    /pics/firefox_ca_info.jpg -- [p]
+    /pics/reset_firefox.jpg -- [p]
+    /pics/reset_firefox-400x271.jpg -2246 -9.16% [p]
+    /pics/bad_ad.jpg -240 -6.33% [b]
+    /pics/dns_jumper-200x92.jpg -704 -9.92% [p]
+    /pics/jpg_youhua-400x326.jpg -2987 -11.17% [p]
+    /pics/reset_firefox-200x136.jpg -588 -7.25% [p]
+    /pics/tplink_dns-200x141.jpg -597 -11.32% [b]
+    /pics/vim_cheat_sheet-400x278.jpg -3228 -7.55% [p]
+    /pics/dns_test-193x150.jpg -797 -8.27% [p]
+    /pics/firefox_privacy-200x49.jpg -400 -12.28% [b]
+    /pics/vim_cheat_sheet-200x139.jpg -906 -7.23% [p]
+    /pics/bitmap.jpg -- [p]
+    /pics/dns_test.jpg -- [p]
+    /pics/jpg_youhua.jpg -- [p]
+    /pics/firefox_privacy.jpg -- [p]
+    /pics/dns_jumper.jpg -- [p]
+    /pics/jpg_youhua-184x150.jpg -638 -8.51% [b]
+    /pics/dns_test-400x310.jpg -2961 -7.81% [p]
+    /pics/firefox_ca_info-400x448.jpg -4038 -8.19% [p]
+    /pics/bitmap-200x83.jpg -680 -9.55% [p]
+    /pics/tplink_dns.jpg -- [p]
+    /pics/tplink_dns-768x542.jpg -5194 -13.35% [p]
+    /pics/firefox_ca_info-134x150.jpg -479 -6.57% [b]
+    /pics/firefox_privacy-400x98.jpg -857 -9.63% [p]
+    /pics/tplink_dns-400x282.jpg -1420 -9.49% [p]
+    /pics/dns_jumper-400x184.jpg -2355 -10.96% [p]
+    [smally]: total saved: 31315, 30.58K, 0.03M, 0.0G, 19/28
 
 
 **--** means no change
 
 **-xxx** means how mang bytes saved
 
+**-xx.xx%** means how many percentage compressed against original file
+
 **[b]** means to choose baseline JPG format finally
 
 **[p]** means to choose progressive JPG format finally
 
-n/m means there are total m pictures and n of them are just compressed 
+**n/m** means there are total m pictures and n of them are just compressed 
 
 Only show info of compressed:
 
@@ -125,6 +138,11 @@ Only show info of compressed:
 
 
 ## version
+
+* **2019-09-17 V0.16**
+    
+    1. add percentage info while compressing
+    2. slightly structure optimization
 
 * **2019-08-30 V0.15**
 

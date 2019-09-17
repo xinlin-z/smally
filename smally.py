@@ -8,7 +8,7 @@ import subprocess
 
 # contants
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.15 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.16 '\
             'by www.pynote.net' % NAME
 
 

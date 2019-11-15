@@ -14,8 +14,7 @@ VER = '%s: compress JPGs losslessly in batch mode and more... V0.16 '\
 
 def walktree(top, call):
     """walk file tree from position top, 
-    for each file, callback is called.
-    https://www.pynote.net/archives/294"""
+    for each file, callback is called."""
     for f in os.listdir(top):
         pathname = os.path.join(top, f)
         try: 
@@ -23,15 +22,13 @@ def walktree(top, call):
         except:
             continue
         if S_ISDIR(mode):
-            # directory, recurse into it
-            walktree(pathname, call)
-        else: 
-            # skip all other file type but regular file
-            if S_ISREG(os.stat(pathname).st_mode) is False: 
-                return
+            walktree(pathname, call)  # directory, recurse into it
+        elif S_ISREG(mode) is False:
+            continue                  # skip all non-regular file
+        else:
             # get file extension
             _, file_ext = os.path.splitext(pathname)
-            # call
+            # call accordingly
             if (file_ext == '.jpg' or file_ext == '.jpeg') and gJPG == True:
                 call(pathname)
             if file_ext == '.png' and gPNG == True:

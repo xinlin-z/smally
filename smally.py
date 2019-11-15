@@ -31,12 +31,16 @@ def walktree(top, call):
             # call accordingly
             if (file_ext == '.jpg' or file_ext == '.jpeg') and gJPG == True:
                 call(pathname)
+                continue
             if file_ext == '.png' and gPNG == True:
                 call(pathname)
+                continue
             if file_ext == '.gif' and gGIF == True:
                 call(pathname)
+                continue
             if file_ext == '.webp' and gWEBP == True:
                 call(pathname)
+                continue
     return
 
     

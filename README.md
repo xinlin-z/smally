@@ -31,9 +31,9 @@ files, choose the smallest one in size
 
 Then, you are good to go...
 
-Don't forget **sudo** when you encounter the Permission denied!
-
 # How to Use
+
+Don't forget **sudo** when you encounter the Permission denied!
 
 ## Compress JPGs Losslessly in Batch Mode
 

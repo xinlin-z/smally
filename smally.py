@@ -10,6 +10,7 @@ import subprocess
 NAME = '[smally]'
 VER = '%s: compress JPGs losslessly in batch mode and more... V0.16 '\
             'by www.pynote.net' % NAME
+FILE_WRONG = '__Wrong_Data'
 
 
 def walktree(top, call):
@@ -52,6 +53,23 @@ def _shell_cmd(cmd, cwd=None):
     return proc.returncode, proc.stdout, proc.stderr
 
 
+def which_cmd(cmd):
+    """use which to check if cmd is in $PATH"""
+    cmd_str = 'which %s' % cmd
+    rcode, _, err = _shell_cmd(cmd_str)
+    if rcode != 0:
+        print('%s: %s can not find in $PATH ' % (NAME,cmd))
+        print(err.decode())
+        return False
+    return True
+
+
+def identify_cmd(pathname):
+    """identify if a file is a right picture format."""
+    rcode, _, _= _shell_cmd('identify %s' % pathname)
+    return True if rcode == 0 else False
+
+
 def getWxH(pathname):
     """get picture's width x height in pixel"""
     cmd = 'identify %s | cut -d" " -f 3 | head -n1' % pathname
@@ -65,17 +83,21 @@ def getWxH(pathname):
 
 
 def show_file(pathname):
-    """show pathname accordingly"""
-    size = os.path.getsize(pathname)
-    print(pathname, getWxH(pathname), str(round(size/1024,2))+'K') 
-    return
+    """show pathname WxH *K accordingly"""
+    if identify_cmd(pathname) is False:
+        print(pathname + FILE_WRONG)
+    else:
+        size = os.path.getsize(pathname)
+        print(pathname, getWxH(pathname), str(round(size/1024,2))+'K') 
 
 
 def size_file(pathname):
     """calculate total size of picture choosed"""
+    if identify_cmd(pathname) is False: 
+        print(pathname + FILE_WRONG)
+        return
     global gSize
     gSize += os.path.getsize(pathname)
-    return
 
 
 def isProgressive(pathname):
@@ -93,11 +115,11 @@ def isProgressive(pathname):
 
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
-    print(pathname, end=' ')
-    global gTotalJpgNum; gTotalJpgNum += 1 
+    global gTotalJpgNum; 
+    gTotalJpgNum += 1 
     basename = os.path.basename(pathname)
-    if basename[0] == '-':
-        print('skip due to file name')
+    if identify_cmd(pathname) is False or basename[0] == '-':
+        print(pathname + FILE_WRONG)
         return
     wd = os.path.dirname(pathname)
     # baseline 
@@ -133,6 +155,7 @@ def jpegtran_jpg(pathname):
     # rm & mv
     global gSaved
     try:
+        print(pathname, end=' ')
         if select_file == 0:  # origin
             os.remove(wd+'/'+file_1)
             os.remove(wd+'/'+file_2)
@@ -154,23 +177,10 @@ def jpegtran_jpg(pathname):
             saved = size - size_2
             print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[p]')
             gSaved += saved
-    except BaseException as e:
+    except Exception as e:
         print('%s: error while rm & mv' % NAME)
         print(repr(e))
         sys.exit(1)
-
-    return 
-
-
-def which_cmd(cmd):
-    """use which to check if cmd is in $PATH"""
-    cmd_str = 'which %s' % cmd
-    rcode, _, err = _shell_cmd(cmd_str)
-    if rcode != 0:
-        print('%s: %s can not find in $PATH ' % (NAME,cmd))
-        print(err.decode())
-        return False
-    return True
 
 
 def main():

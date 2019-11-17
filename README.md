@@ -29,7 +29,9 @@ files, choose the smallest one in size
 2. You need Python3
 3. git clone https://github.com/xinlin-z/smally
 
-Then, you are good to go ...
+Then, you are good to go...
+
+Don't forget **sudo** when you encounter the Permission denied!
 
 # How to Use
 

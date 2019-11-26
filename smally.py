@@ -201,7 +201,7 @@ def main():
     actType.add_argument('--jpegtran', action='store_true',
                 help='lossless compress JPGs with jpegtran tool')
     # version info
-    parser.add_argument('-v','--version',action='version',version=VER)
+    parser.add_argument('-V','--version',action='version',version=VER)
     args = parser.parse_args()  # ~ will be expanded
     # check path
     if (not os.path.isabs(args.abspath) or

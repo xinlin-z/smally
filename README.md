@@ -12,7 +12,8 @@ choosing the progressive format JPG file whenever it's possible. Besides,
 smally also provides a few handy tools to find pictures according to various 
 parameters.
 
-Smally only use **file extension name** to determine picture type!
+Smally only use **file extension name** to determine picture type, and skip
+all files whose name are started by **-**!
 
 **中文参考：https://www.pynote.net/archives/882**
 

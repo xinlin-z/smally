@@ -19,7 +19,10 @@ def walktree(top, call):
     for each file, callback is called."""
     
     def __call(pathname):
-        call(pathname)
+        basename = os.path.basename(pathname)
+        if identify_cmd(pathname) is False or basename[0] == '-':
+            print(pathname + FILE_WRONG)
+        else: call(pathname)
         time.sleep(gInterval)  # interval in between
     
     for f in os.listdir(top):
@@ -90,18 +93,12 @@ def getWxH(pathname):
 
 def show_file(pathname):
     """show pathname WxH *K accordingly"""
-    if identify_cmd(pathname) is False:
-        print(pathname + FILE_WRONG)
-    else:
-        size = os.path.getsize(pathname)
-        print(pathname, getWxH(pathname), str(round(size/1024,2))+'K') 
+    size = os.path.getsize(pathname)
+    print(pathname, getWxH(pathname), str(round(size/1024,2))+'K') 
 
 
 def size_file(pathname):
     """calculate total size of picture choosed"""
-    if identify_cmd(pathname) is False: 
-        print(pathname + FILE_WRONG)
-        return
     global gSize
     gSize += os.path.getsize(pathname)
 
@@ -124,9 +121,6 @@ def jpegtran_jpg(pathname):
     global gTotalJpgNum; 
     gTotalJpgNum += 1 
     basename = os.path.basename(pathname)
-    if identify_cmd(pathname) is False or basename[0] == '-':
-        print(pathname + FILE_WRONG)
-        return
     wd = os.path.dirname(pathname)
     # baseline 
     file_1 = '_1_' + basename
@@ -227,7 +221,11 @@ def main():
         sys.exit(1)
     # interval
     global gInterval
-    if args.interval: gInterval = args.interval/1000
+    if args.interval != None:
+        if args.interval >= 0: gInterval = args.interval/1000
+        else: 
+            print('%s: interval time must be positive' % NAME)
+            sys.exit(1)
     # actions 
     if args.show: 
         if which_cmd('identify') is False: sys.exit(1) 

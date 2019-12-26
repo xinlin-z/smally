@@ -4,18 +4,24 @@ import sys
 import argparse
 from stat import *
 import subprocess
+import time
 
 
 # contants
 NAME = '[smally]'
 VER = '%s: compress JPGs losslessly in batch mode and more... V0.16 '\
             'by www.pynote.net' % NAME
-FILE_WRONG = '__Wrong_Data'
+FILE_WRONG = '__Wrong_File_Data_or_Name'
 
 
 def walktree(top, call):
     """walk file tree from position top, 
     for each file, callback is called."""
+    
+    def __call(pathname):
+        call(pathname)
+        time.sleep(gInterval)  # interval in between
+    
     for f in os.listdir(top):
         pathname = os.path.join(top, f)
         try: 
@@ -31,16 +37,16 @@ def walktree(top, call):
             _, file_ext = os.path.splitext(pathname)
             # call accordingly
             if (file_ext == '.jpg' or file_ext == '.jpeg') and gJPG == True:
-                call(pathname)
+                __call(pathname)
                 continue
             if file_ext == '.png' and gPNG == True:
-                call(pathname)
+                __call(pathname)
                 continue
             if file_ext == '.gif' and gGIF == True:
-                call(pathname)
+                __call(pathname)
                 continue
             if file_ext == '.webp' and gWEBP == True:
-                call(pathname)
+                __call(pathname)
                 continue
     return
 
@@ -65,7 +71,7 @@ def which_cmd(cmd):
 
 
 def identify_cmd(pathname):
-    """identify if a file is a right picture format."""
+    """identify if a file is a legal picture format."""
     rcode, _, _= _shell_cmd('identify %s' % pathname)
     return True if rcode == 0 else False
 
@@ -187,6 +193,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--abspath', required=True, 
                         help='absolute path for the picture folder')
+    parser.add_argument('-i', '--interval', type=int,
+                        help='interval time in milliseconds')
     parser.add_argument('--jpg', action='store_true', 
                             help='for both .jpg and .jpeg suffix')
     parser.add_argument('--png', action='store_true')
@@ -217,6 +225,9 @@ def main():
     if (gJPG or gPNG or gGIF or gWEBP) is False:
         print('%s: no picture type choosed' % NAME)
         sys.exit(1)
+    # interval
+    global gInterval
+    if args.interval: gInterval = args.interval/1000
     # actions 
     if args.show: 
         if which_cmd('identify') is False: sys.exit(1) 
@@ -249,6 +260,7 @@ if __name__ == '__main__':
     gSize = 0
     gSaved = 0
     gTotalJpgNum = 0; gCompJpgNum = 0
+    gInterval = 0.0;
     main()
 
 

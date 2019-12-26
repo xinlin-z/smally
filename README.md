@@ -102,6 +102,9 @@ Only show info of compressed if there are too many pictures:
     
     $ python3 smally.py -h
 
+**-i** option is used to add time interval (milliseconds) between each 
+piture's process. This may be helpful in your busy production server.
+
 ## Show Pictures' Info
 
 Use --show to get pictures' info.

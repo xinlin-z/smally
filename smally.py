@@ -116,45 +116,63 @@ def isProgressive(pathname):
     return False
 
 
+def _jpg_wash_floor(pathname, wd, file1, file2):
+    """try to restore pathname and delete tmp files while exceptions"""
+    if os.path.exists(pathname):
+        try:
+            os.remove(wd+'/'+file1)
+            os.remove(wd+'/'+file2)
+        except: pass
+    else:
+        if os.path.exists(wd+'/'+file2):
+            os.rename(wd+'/'+file2, pathname)
+            try: os.remove(wd+'/'+file1)
+            except: pass
+        else:
+            os.rename(wd+'/'+file1, pathname)
+
+
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
     global gTotalJpgNum; 
     gTotalJpgNum += 1 
-    basename = os.path.basename(pathname)
-    wd = os.path.dirname(pathname)
-    # baseline 
-    file_1 = '_1_' + basename
-    cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
-    rcode, _, err = _shell_cmd(cmd_1, wd)
-    if rcode != 0:
-        print('%s: error while jpegtran baseline compression' % NAME)
-        print(err.decode())
-        os.remove(wd+'/'+file_1)
-        sys.exit(1)
-    # progressive
-    file_2 = '_2_' + basename
-    cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
-    rcode, _, err = _shell_cmd(cmd_2, wd)
-    if rcode != 0:
-        print('%s: error while jpegtran progressive compression' % NAME)
-        print(err.decode())
-        os.remove(wd+'/'+file_2)
-        os.remove(wd+'/'+file_1)  # delete temp file_1
-        sys.exit(1)
-    # choose the smallest one
-    size = os.path.getsize(pathname)
-    size_1 = os.path.getsize(wd+'/'+file_1)
-    size_2 = os.path.getsize(wd+'/'+file_2)
-    if size <= size_1 and size <= size_2: 
-        select_file = 0
-        if size == size_2 and isProgressive(pathname) is False: 
-            select_file = 2  # progressive is preferred
-    else:
-        if size_2 <= size_1: select_file = 2  
-        else: select_file = 1
-    # rm & mv
-    global gSaved
     try:
+        # init
+        basename = os.path.basename(pathname)
+        wd = os.path.dirname(pathname)
+        file_1 = ''
+        file_2 = ''
+        # baseline 
+        file_1 = '_1_' + basename
+        cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
+        rcode, _, err = _shell_cmd(cmd_1, wd)
+        if rcode != 0:
+            print('%s: error while jpegtran baseline compression' % NAME)
+            print(err.decode())
+            os.remove(wd+'/'+file_1)
+            sys.exit(1)
+        # progressive
+        file_2 = '_2_' + basename
+        cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
+        rcode, _, err = _shell_cmd(cmd_2, wd)
+        if rcode != 0:
+            print('%s: error while jpegtran progressive compression' % NAME)
+            print(err.decode())
+            _jpg_wash_floor(pathname, wd, file_1, file_2)
+            sys.exit(1)
+        # choose the smallest one
+        size = os.path.getsize(pathname)
+        size_1 = os.path.getsize(wd+'/'+file_1)
+        size_2 = os.path.getsize(wd+'/'+file_2)
+        if size <= size_1 and size <= size_2: 
+            select_file = 0
+            if size == size_2 and isProgressive(pathname) is False: 
+                select_file = 2  # progressive is preferred
+        else:
+            if size_2 <= size_1: select_file = 2  
+            else: select_file = 1
+        # rm & mv
+        global gSaved
         print(pathname, end=' ')
         if select_file == 0:  # origin
             os.remove(wd+'/'+file_1)
@@ -177,9 +195,14 @@ def jpegtran_jpg(pathname):
             saved = size - size_2
             print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[p]')
             gSaved += saved
+    except KeyboardInterrupt as e:
+        print('\n%s: restore and delete before dying, a moment...' % NAME)
+        _jpg_wash_floor(pathname, wd, file_1, file_2)
+        sys.exit(1)
     except Exception as e:
         print('%s: error while rm & mv' % NAME)
         print(repr(e))
+        _jpg_wash_floor(pathname, wd, file_1, file_2)
         sys.exit(1)
 
 

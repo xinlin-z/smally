@@ -272,8 +272,6 @@ def main():
                 str(round(gSaved/1024/1024/1024,4))+'G,',
                 str(gCompJpgNum)+'/'+str(gTotalJpgNum))
 
-    return
-
 
 if __name__ == '__main__':
     # globals

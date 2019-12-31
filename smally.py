@@ -9,7 +9,7 @@ import time
 
 # contants
 NAME = '[smally]'
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.16 '\
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.17 '\
             'by www.pynote.net' % NAME
 FILE_WRONG = '__Wrong_File_Data_or_Name'
 

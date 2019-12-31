@@ -13,7 +13,7 @@ smally also provides a few handy tools to find pictures according to various
 parameters.
 
 Smally only use **file extension name** to determine picture type, and skip
-all files whose name are started by **-**!
+all files whose name are started by **-** (dash)!
 
 **中文参考：https://www.pynote.net/archives/882**
 
@@ -170,6 +170,13 @@ Example for calculating all GIFs and PNGs total size:
 You can not use smally to get a single picture's size, please use ls -l.
 
 # Version
+
+* **2019-12-31 V0.17**
+
+    - add -i option
+    - restore and delete temporary while exceptions
+    - bugfix and code optimization
+    - rewrite README.md 
 
 * **2019-09-17 V0.16**
     

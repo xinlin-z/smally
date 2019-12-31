@@ -147,19 +147,17 @@ def jpegtran_jpg(pathname):
         cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
         rcode, _, err = _shell_cmd(cmd_1, wd)
         if rcode != 0:
-            print('%s: error while jpegtran baseline compression' % NAME)
-            print(err.decode())
-            _jpg_wash_floor(pathname, wd, file_1, file_2)
-            sys.exit(1)
+            raise ChildProcessError('%s: error while jpegtran baseline '
+                                    'compression\n' % NAME
+                                    + err.decode())
         # progressive
         file_2 = '_2_' + basename
         cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
         rcode, _, err = _shell_cmd(cmd_2, wd)
         if rcode != 0:
-            print('%s: error while jpegtran progressive compression' % NAME)
-            print(err.decode())
-            _jpg_wash_floor(pathname, wd, file_1, file_2)
-            sys.exit(1)
+            raise ChildProcessError('%s: error while jpegtran progressive '
+                                    'compression\n' % NAME
+                                    + err.decode())
         # choose the smallest one
         size = os.path.getsize(pathname)
         size_1 = os.path.getsize(wd+'/'+file_1)
@@ -180,7 +178,9 @@ def jpegtran_jpg(pathname):
             if isProgressive(pathname) is True:
                 print('-- [p]')
             else: print('-- [b]')
-        else: global gCompJpgNum; gCompJpgNum += 1 
+        else: 
+            global gCompJpgNum
+            gCompJpgNum += 1 
         if select_file == 1:  # baseline
             os.remove(pathname)
             os.remove(wd+'/'+file_2)
@@ -195,12 +195,8 @@ def jpegtran_jpg(pathname):
             saved = size - size_2
             print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[p]')
             gSaved += saved
-    except KeyboardInterrupt as e:
-        print('\n%s: restore and delete before dying, a moment...' % NAME)
-        _jpg_wash_floor(pathname, wd, file_1, file_2)
-        sys.exit(1)
-    except Exception as e:
-        print('%s: error while rm & mv' % NAME)
+    # use BaseException to catch KeyboardInterrupt
+    except BaseException as e: 
         print(repr(e))
         _jpg_wash_floor(pathname, wd, file_1, file_2)
         sys.exit(1)

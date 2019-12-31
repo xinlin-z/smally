@@ -119,9 +119,9 @@ def isProgressive(pathname):
 def _jpg_wash_floor(pathname, wd, file1, file2):
     """try to restore pathname and delete tmp files while exceptions"""
     if os.path.exists(pathname):
-        try:
-            os.remove(wd+'/'+file1)
-            os.remove(wd+'/'+file2)
+        try: os.remove(wd+'/'+file1)
+        except: pass
+        try: os.remove(wd+'/'+file2)
         except: pass
     else:
         if os.path.exists(wd+'/'+file2):
@@ -149,7 +149,7 @@ def jpegtran_jpg(pathname):
         if rcode != 0:
             print('%s: error while jpegtran baseline compression' % NAME)
             print(err.decode())
-            os.remove(wd+'/'+file_1)
+            _jpg_wash_floor(pathname, wd, file_1, file_2)
             sys.exit(1)
         # progressive
         file_2 = '_2_' + basename

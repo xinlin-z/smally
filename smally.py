@@ -50,8 +50,6 @@ def walktree(top, call):
                 continue
             if file_ext == '.webp' and gWEBP == True:
                 __call(pathname)
-                continue
-    return
 
     
 def _shell_cmd(cmd, cwd=None):
@@ -67,7 +65,7 @@ def which_cmd(cmd):
     cmd_str = 'which %s' % cmd
     rcode, _, err = _shell_cmd(cmd_str)
     if rcode != 0:
-        print('%s: %s can not find in $PATH ' % (NAME,cmd))
+        print('%s: %s can not be found in $PATH ' % (NAME,cmd))
         print(err.decode())
         return False
     return True
@@ -124,12 +122,19 @@ def _jpg_wash_floor(pathname, wd, file1, file2):
         try: os.remove(wd+'/'+file2)
         except: pass
     else:
-        if os.path.exists(wd+'/'+file2):
+        if (os.path.exists(wd+'/'+file1) and 
+            os.path.exists(wd+'/'+file2)):
+            size1 = os.path.getsize(wd+'/'+file1)
+            size2 = os.path.getsize(wd+'/'+file2)
+            if size1 >= size2:
+                os.remove(wd+'/'+file1)
+                os.rename(wd+'/'+file2, pathname)
+            else:
+                os.remove(wd+'/'+file2)
+                os.rename(wd+'/'+file1, pathname)
+        elif os.path.exists(wd+'/'+file2):
             os.rename(wd+'/'+file2, pathname)
-            try: os.remove(wd+'/'+file1)
-            except: pass
-        else:
-            os.rename(wd+'/'+file1, pathname)
+        else: os.rename(wd+'/'+file1, pathname)
 
 
 def jpegtran_jpg(pathname):
@@ -137,13 +142,10 @@ def jpegtran_jpg(pathname):
     global gTotalJpgNum; 
     gTotalJpgNum += 1 
     try:
-        # init
         basename = os.path.basename(pathname)
         wd = os.path.dirname(pathname)
-        file_1 = ''
-        file_2 = ''
         # baseline 
-        file_1 = '_1_' + basename
+        file_1 = '__smally_jpg1_' + basename
         cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
         rcode, _, err = _shell_cmd(cmd_1, wd)
         if rcode != 0:
@@ -151,7 +153,7 @@ def jpegtran_jpg(pathname):
                                     'compression\n' % NAME
                                     + err.decode())
         # progressive
-        file_2 = '_2_' + basename
+        file_2 = '__smally_jpg2_' + basename
         cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
         rcode, _, err = _shell_cmd(cmd_2, wd)
         if rcode != 0:
@@ -198,6 +200,12 @@ def jpegtran_jpg(pathname):
     # use BaseException to catch KeyboardInterrupt
     except BaseException as e: 
         print(repr(e))
+        # make sure wd, file_1, file_2 are all defined
+        if 'wd' not in locals().keys(): sys.exit(1)
+        if 'file_1' not in locals().keys(): sys.exit(1)
+        if 'file_2' not in locals().keys(): 
+            os.remove(wd+'/'+file1)
+            sys.exit(1)
         _jpg_wash_floor(pathname, wd, file_1, file_2)
         sys.exit(1)
 

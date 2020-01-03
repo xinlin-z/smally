@@ -114,29 +114,6 @@ def isProgressive(pathname):
     return False
 
 
-def _jpg_wash_floor(pathname, wd, file1, file2):
-    """try to restore pathname and delete tmp files while exceptions"""
-    if os.path.exists(pathname):
-        try: os.remove(wd+'/'+file1)
-        except: pass
-        try: os.remove(wd+'/'+file2)
-        except: pass
-    else:
-        if (os.path.exists(wd+'/'+file1) and 
-            os.path.exists(wd+'/'+file2)):
-            size1 = os.path.getsize(wd+'/'+file1)
-            size2 = os.path.getsize(wd+'/'+file2)
-            if size1 >= size2:
-                os.remove(wd+'/'+file1)
-                os.rename(wd+'/'+file2, pathname)
-            else:
-                os.remove(wd+'/'+file2)
-                os.rename(wd+'/'+file1, pathname)
-        elif os.path.exists(wd+'/'+file2):
-            os.rename(wd+'/'+file2, pathname)
-        else: os.rename(wd+'/'+file1, pathname)
-
-
 def jpegtran_jpg(pathname):
     """use jpegtran compress jpg losslessly"""
     global gTotalJpgNum; 
@@ -200,13 +177,27 @@ def jpegtran_jpg(pathname):
     # use BaseException to catch KeyboardInterrupt
     except BaseException as e: 
         print(repr(e))
-        # make sure wd, file_1, file_2 are all defined
+        # wash the floor, make sure delete pathname first in above code
         if 'wd' not in locals().keys(): sys.exit(1)
-        if 'file_1' not in locals().keys(): sys.exit(1)
-        if 'file_2' not in locals().keys(): 
-            os.remove(wd+'/'+file1)
-            sys.exit(1)
-        _jpg_wash_floor(pathname, wd, file_1, file_2)
+        if os.path.exists(pathname):
+            try: os.remove(wd+'/'+file_1)
+            except: pass
+            try: os.remove(wd+'/'+file_2)
+            except: pass
+        else:
+            if (os.path.exists(wd+'/'+file_1) and 
+                os.path.exists(wd+'/'+file_2)):
+                size1 = os.path.getsize(wd+'/'+file_1)
+                size2 = os.path.getsize(wd+'/'+file_2)
+                if size1 >= size2:
+                    os.remove(wd+'/'+file_1)
+                    os.rename(wd+'/'+file_2, pathname)
+                else:
+                    os.remove(wd+'/'+file_2)
+                    os.rename(wd+'/'+file_1, pathname)
+            elif os.path.exists(wd+'/'+file_2):
+                os.rename(wd+'/'+file_2, pathname)
+            else: os.rename(wd+'/'+file_1, pathname)
         sys.exit(1)
 
 

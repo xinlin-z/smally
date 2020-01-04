@@ -122,25 +122,25 @@ def jpegtran_jpg(pathname):
         basename = os.path.basename(pathname)
         wd = os.path.dirname(pathname)
         # baseline 
-        file_1 = '__smally_jpg1_' + basename
-        cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (basename,file_1)
-        rcode, _, err = _shell_cmd(cmd_1, wd)
+        file_1 = wd + '/'+ '__smally_jpg1_' + basename
+        cmd_1 = 'jpegtran -copy none -optimize %s > %s' % (pathname,file_1)
+        rcode, _, err = _shell_cmd(cmd_1)
         if rcode != 0:
             raise ChildProcessError('%s: error while jpegtran baseline '
                                     'compression\n' % NAME
                                     + err.decode())
         # progressive
-        file_2 = '__smally_jpg2_' + basename
-        cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (basename,file_2)
-        rcode, _, err = _shell_cmd(cmd_2, wd)
+        file_2 = wd + '/' + '__smally_jpg2_' + basename
+        cmd_2 = 'jpegtran -copy none -progressive %s > %s' % (pathname,file_2)
+        rcode, _, err = _shell_cmd(cmd_2)
         if rcode != 0:
             raise ChildProcessError('%s: error while jpegtran progressive '
                                     'compression\n' % NAME
                                     + err.decode())
         # choose the smallest one
         size = os.path.getsize(pathname)
-        size_1 = os.path.getsize(wd+'/'+file_1)
-        size_2 = os.path.getsize(wd+'/'+file_2)
+        size_1 = os.path.getsize(file_1)
+        size_2 = os.path.getsize(file_2)
         if size <= size_1 and size <= size_2: 
             select_file = 0
             if size == size_2 and isProgressive(pathname) is False: 
@@ -152,8 +152,8 @@ def jpegtran_jpg(pathname):
         global gSaved
         print(pathname, end=' ')
         if select_file == 0:  # origin
-            os.remove(wd+'/'+file_1)
-            os.remove(wd+'/'+file_2)
+            os.remove(file_1)
+            os.remove(file_2)
             if isProgressive(pathname) is True:
                 print('-- [p]')
             else: print('-- [b]')
@@ -162,15 +162,15 @@ def jpegtran_jpg(pathname):
             gCompJpgNum += 1 
         if select_file == 1:  # baseline
             os.remove(pathname)
-            os.remove(wd+'/'+file_2)
-            os.rename(wd+'/'+file_1, pathname)
+            os.remove(file_2)
+            os.rename(file_1, pathname)
             saved = size - size_1
             print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[b]')
             gSaved += saved
         if select_file == 2:  # progressive
             os.remove(pathname)
-            os.remove(wd+'/'+file_1)
-            os.rename(wd+'/'+file_2, pathname)
+            os.remove(file_1)
+            os.rename(file_2, pathname)
             saved = size - size_2
             print('-'+str(saved),'-'+str(round(saved/size*100,2))+'%','[p]')
             gSaved += saved
@@ -178,26 +178,25 @@ def jpegtran_jpg(pathname):
     except BaseException as e: 
         print(repr(e))
         # wash the floor, make sure delete pathname first in above code
-        if 'wd' not in locals().keys(): sys.exit(1)
         if os.path.exists(pathname):
-            try: os.remove(wd+'/'+file_1)
+            try: os.remove(file_1)
             except: pass
-            try: os.remove(wd+'/'+file_2)
+            try: os.remove(file_2)
             except: pass
         else:
-            if (os.path.exists(wd+'/'+file_1) and 
-                os.path.exists(wd+'/'+file_2)):
-                size1 = os.path.getsize(wd+'/'+file_1)
-                size2 = os.path.getsize(wd+'/'+file_2)
+            if (os.path.exists(file_1) and 
+                os.path.exists(file_2)):
+                size1 = os.path.getsize(file_1)
+                size2 = os.path.getsize(file_2)
                 if size1 >= size2:
-                    os.remove(wd+'/'+file_1)
-                    os.rename(wd+'/'+file_2, pathname)
+                    os.remove(file_1)
+                    os.rename(file_2, pathname)
                 else:
-                    os.remove(wd+'/'+file_2)
-                    os.rename(wd+'/'+file_1, pathname)
-            elif os.path.exists(wd+'/'+file_2):
-                os.rename(wd+'/'+file_2, pathname)
-            else: os.rename(wd+'/'+file_1, pathname)
+                    os.remove(file_2)
+                    os.rename(file_1, pathname)
+            elif os.path.exists(file_2):
+                os.rename(file_2, pathname)
+            else: os.rename(file_1, pathname)
         sys.exit(1)
 
 

@@ -186,9 +186,7 @@ def jpegtran_jpg(pathname):
         else:
             if (os.path.exists(file_1) and 
                 os.path.exists(file_2)):
-                size1 = os.path.getsize(file_1)
-                size2 = os.path.getsize(file_2)
-                if size1 >= size2:
+                if os.path.getsize(file_1) >= os.path.getsize(file_2):
                     os.remove(file_1)
                     os.rename(file_2, pathname)
                 else:

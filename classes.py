@@ -22,6 +22,12 @@ class sh():
         return proc.returncode, proc.stdout, proc.stderr
 
     @staticmethod
+    def identify(pathname):
+        """identify if a file is a legal picture format."""
+        rcode, _, _= sh.cmd('identify %s' % pathname)
+        return True if rcode == 0 else False
+
+    @staticmethod
     def which(cmd):
         """use which to check if cmd is in $PATH"""
         cmd_str = 'which %s' % cmd
@@ -31,12 +37,6 @@ class sh():
             print(err.decode())
             return False
         return True
-
-    @staticmethod
-    def identify(pathname):
-        """identify if a file is a legal picture format."""
-        rcode, _, _= sh.cmd('identify %s' % pathname)
-        return True if rcode == 0 else False
 
     @staticmethod
     def getWxH(pathname):
@@ -77,6 +77,23 @@ class walk():
         """called by subclass action section"""
         it.num_do += 1
 
+    def do(it, pathname):
+        pass  # please override in subclass if needed
+
+    def check(it, pathname):
+        if (sh.identify(pathname) is False
+              or os.path.basename(pathname)[0] == '-'):
+            print(pathname + FILE_WRONG)
+            return False
+        return True
+
+    def after(it):
+        pass  # please override in subcleass if needed
+
+    def start(it, top):
+        for path in top: it.go(path)
+        it.after()
+
     def go(it, top):
         for f in os.listdir(top):
             pathname = os.path.join(top, f)
@@ -94,26 +111,14 @@ class walk():
                 _, file_ext = os.path.splitext(pathname)
                 # call accordingly
                 if file_ext in it.ptype: 
-                    if (sh.identify(pathname) is False
-                          or os.path.basename(pathname)[0] == '-'):
-                        print(pathname + FILE_WRONG)
+                    if it.check(pathname) is False:
                         continue
-                    it.call(pathname)
+                    it.do(pathname)
                     it.num_call += 1
                     time.sleep(it.interval)
 
 
-class actions(walk):
-    """actions class"""
-    def do(it, pathname):
-        pass  # please override in subclass
-
-    def start(it, top):
-        it.call = it.do
-        for path in top: it.go(path)
-
-
-class pShow(actions):
+class pShow(walk):
     """show command"""
     def do(it, pathname):
         size = os.path.getsize(pathname)
@@ -121,22 +126,34 @@ class pShow(actions):
         it.incr_num_do()
 
 
-class pSize(actions):
+class pSize(walk):
     """size command"""
     def __init__(it, ptype, interval):
         super().__init__(ptype, interval)
         it.size = 0
+
+    def after(it):
+        print('%s: total size:'%NAME, str(it.size)+',',
+                str(round(it.size/1024,2))+'K,',
+                str(round(it.size/1024/1024,3))+'M,',
+                str(round(it.size/1024/1024/1024,4))+'G')
 
     def do(it, pathname):
         it.size += os.path.getsize(pathname)
         it.incr_num_do()
         
 
-class pJpegtran(actions):
+class pJpegtran(walk):
     """jpegtran command"""
     def __init__(it, ptype, interval):
         super().__init__(ptype, interval)
         it.saved = 0
+
+    def after(it):
+        print('%s: total saved:'%NAME, str(it.saved)+',',
+                str(round(it.saved/1024,2))+'K,',
+                str(round(it.saved/1024/1024,3))+'M,',
+                str(round(it.saved/1024/1024/1024,4))+'G')
         
     def do(it, pathname):
         try:
@@ -222,8 +239,5 @@ class pJpegtran(actions):
 if __name__ == '__main__':
     pshow = pJpegtran(['.jpg','.jpeg'],0.0)
     pshow.start(('/home/xinlin/test/pics/r',))
-    print(': total size:', str(pshow.saved)+',',
-            str(round(pshow.saved/1024,2))+'K,',
-            str(round(pshow.saved/1024/1024,3))+'M,',
-            str(round(pshow.saved/1024/1024/1024,4))+'G')
+
 

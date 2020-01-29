@@ -120,6 +120,10 @@ class walk():
 
 class pShow(walk):
     """show command"""
+    def __init__(it, ptype, interval, path):
+        super().__init__(ptype, interval)
+        it.start(path)
+
     def do(it, pathname):
         size = os.path.getsize(pathname)
         print(pathname, sh.getWxH(pathname), str(round(size/1024,2))+'K')
@@ -128,9 +132,10 @@ class pShow(walk):
 
 class pSize(walk):
     """size command"""
-    def __init__(it, ptype, interval):
+    def __init__(it, ptype, interval, path):
         super().__init__(ptype, interval)
         it.size = 0
+        it.start(path)
 
     def after(it):
         print('%s: total size:'%NAME, str(it.size)+',',
@@ -145,9 +150,10 @@ class pSize(walk):
 
 class pJpegtran(walk):
     """jpegtran command"""
-    def __init__(it, ptype, interval):
+    def __init__(it, ptype, interval, path):
         super().__init__(ptype, interval)
         it.saved = 0
+        it.start(path)
 
     def after(it):
         print('%s: total saved:'%NAME, str(it.saved)+',',
@@ -236,8 +242,9 @@ class pJpegtran(walk):
             sys.exit(1)
 
 
-if __name__ == '__main__':
-    pshow = pJpegtran(['.jpg','.jpeg'],0.0)
-    pshow.start(('/home/xinlin/test/pics/r',))
+#if __name__ == '__main__':
+#    pShow(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
+#    pSize(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
+#    pJpegtran(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
 
 

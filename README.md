@@ -3,12 +3,12 @@
 Compress JPG losslessly in batch mode and more...
 
 The requirements for **smally** is mainly from the picture management and 
-optimization of website. The core appeal for website is faster and faster, and 
-the core appeal for picture is smaller and smaller, and use JPGs as much as 
-possible for my own opinion.
+optimization of website. The core appeal for website are faster and faster, 
+and the core appeal for picture are smaller and smaller, and use JPGs as much 
+as possible for my own opinion.
 
-Smally's highlight feature is to compress JPGs losslessly in batch mode, while
-choosing the progressive format JPG file whenever it's possible. Besides, 
+Smally is highlighted by compressing JPGs losslessly in batch mode, while
+choosing the progressive JPG format file whenever it's possible. Besides, 
 smally also provides a few handy tools to find pictures according to various 
 parameters.
 
@@ -74,7 +74,7 @@ Example:
     /pics/firefox_privacy-400x98.jpg -857 -9.63% [p]
     /pics/tplink_dns-400x282.jpg -1420 -9.49% [p]
     /pics/dns_jumper-400x184.jpg -2355 -10.96% [p]
-    [smally]: total saved: 31315, 30.58K, 0.03M, 0.0G, 19/28
+    [smally]: total saved: 31315, 30.58K, 0.03M, 0.0G, 19/28/123
 
 
 Explain:
@@ -92,7 +92,9 @@ infomation which represents the smally's workout.
 
 **[p]** : means to choose progressive JPG format finally
 
-**n/m** : means there are total m pictures and n of them are just compressed 
+**l/n/m** : means there are total m file scanned,
+            with n of them are called compress procedure,
+            with l of them are really compressed.
 
 Only show info of compressed if there are too many pictures:
 
@@ -170,6 +172,10 @@ Example for calculating all GIFs and PNGs total size:
 You can not use smally to get a single picture's size, please use ls -l.
 
 # Version
+
+* **2020-01-29 V0.18**
+    - refactor code completely into OOP way
+    - tweak show info while jpegtran jpg process (n/m --> l/n/m)
 
 * **2019-12-31 V0.17**
 

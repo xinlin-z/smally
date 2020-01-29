@@ -71,7 +71,7 @@ class walk():
         it.num_call = 0         # file number processed
         it.num_do = 0           # file number did meaningful action
         it.ptype = ptype
-        it.interval = 0.0
+        it.interval = interval
 
     def incr_num_do(it):
         """called by subclass action section"""
@@ -159,7 +159,8 @@ class pJpegtran(walk):
         print('%s: total saved:'%NAME, str(it.saved)+',',
                 str(round(it.saved/1024,2))+'K,',
                 str(round(it.saved/1024/1024,3))+'M,',
-                str(round(it.saved/1024/1024/1024,4))+'G')
+                str(round(it.saved/1024/1024/1024,4))+'G,',
+                str(it.num_do)+'/'+str(it.num_call)+'/'+str(it.total))
         
     def do(it, pathname):
         try:

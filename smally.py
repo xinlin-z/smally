@@ -2,18 +2,37 @@
 import os
 import sys
 import argparse
+import textwrap
 from classes import sh, pShow, pSize, pJpegtran, NAME 
 
 
 # contants
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.18 '\
-            'by www.pynote.net' % NAME
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.18 ' % NAME
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--abspath', required=True, 
-                        help='absolute path for the picture folder')
+    parser = argparse.ArgumentParser(
+                formatter_class = argparse.RawDescriptionHelpFormatter,
+                description = f'{VER}' + textwrap.dedent('''
+    
+    Usage Examples:
+
+    1), compress JPGs lossless in batch mode
+        $ python3 smally.py -a /path1 /path2 --jpegtran --jpg
+        -a option is mandatory and must have one absolute path at least.
+        Only --jpg can be combined with --jpegtran.
+
+    2), add interval time between each picture processed
+        $ python3 smally.py -a /path1 --jpegtran --jpg -i 500
+        Default interval time is zero.
+        -i option is optional and in milliseconds unit.
+    '''),
+                epilog = 'welcome to my github & blog:\n'
+                         'https://github.com/xinlin-z\n'
+                         'https://www.maixj.net\n'
+                         'https://www.pynote.net')
+    parser.add_argument('-a', '--abspath', required=True, nargs='+', 
+                    help='absolute path for the picture folder, support ~')
     parser.add_argument('-i', '--interval', type=int,
                         help='interval time in milliseconds')
     parser.add_argument('--jpg', action='store_true', 
@@ -33,10 +52,11 @@ def main():
     parser.add_argument('-V','--version',action='version',version=VER)
     args = parser.parse_args()  # ~ will be expanded
     # check path
-    if (not os.path.isabs(args.abspath) or
-        not os.path.exists(args.abspath)):
-        print('%s: path must be absolute and existed, support ~' % NAME)
-        sys.exit(1)
+    for path in args.abspath:
+        if (not os.path.isabs(path) or
+            not os.path.exists(path)):
+            print('%s: All paths must be absolute and existed.' % NAME)
+            sys.exit(1)
     # check picture type
     ptype = []
     if args.jpg: ptype.extend(['.jpg','.jpeg'])
@@ -44,28 +64,28 @@ def main():
     if args.gif: ptype.append('.gif')
     if args.webp: ptype.append('.webp')
     if ptype == []:
-        print('%s: no picture type choosed' % NAME)
+        print('%s: No picture type choosed.' % NAME)
         sys.exit(1)
     # interval
     interval = 0.0
     if args.interval != None:
         if args.interval >= 0: interval = args.interval/1000
         else: 
-            print('%s: interval time must be positive' % NAME)
+            print('%s: Interval time must be positive.' % NAME)
             sys.exit(1)
     # actions 
     if args.show: 
         if sh.which('identify') is False: sys.exit(1) 
-        pShow(ptype, interval, (args.abspath,))
+        pShow(ptype, interval, args.abspath)
     if args.size:
-        pSize(ptype, interval, (args.abspath,))
+        pSize(ptype, interval, args.abspath)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
-            print('%s: --jpegtran only support JPG' % NAME)
+            print('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)
-        pJpegtran(ptype, interval, (args.abspath,))
+        pJpegtran(ptype, interval, args.abspath)
 
 
 if __name__ == '__main__':

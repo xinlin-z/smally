@@ -243,9 +243,3 @@ class pJpegtran(walk):
             sys.exit(1)
 
 
-#if __name__ == '__main__':
-#    pShow(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
-#    pSize(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
-#    pJpegtran(['.jpg','.jpeg'], 0.0, ('/home/xinlin/test/pics/r',))
-
-

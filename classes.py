@@ -66,12 +66,13 @@ class sh():
 
 class walk(): 
     """Walk tree and callback according to ptype."""
-    def __init__(it, ptype, interval):
+    def __init__(it, ptype, interval, recursive=False):
         it.total = 0            # file number scanned
         it.num_call = 0         # file number processed
         it.num_do = 0           # file number did meaningful action
         it.ptype = ptype
         it.interval = interval
+        it.recursive = recursive
 
     def incr_num_do(it):
         """called by subclass action section"""
@@ -102,7 +103,9 @@ class walk():
             except:
                 continue
             if S_ISDIR(mode):
-                it.go(pathname)           # directory, recurse into it
+                if it.recursive:
+                    it.go(pathname)       # directory, recurse into it
+                else: continue
             elif S_ISREG(mode) is False:
                 continue                  # skip all non-regular file
             else:
@@ -120,8 +123,8 @@ class walk():
 
 class pShow(walk):
     """show command"""
-    def __init__(it, ptype, interval, path):
-        super().__init__(ptype, interval)
+    def __init__(it, ptype, interval, recursive, path):
+        super().__init__(ptype, interval, recursive)
         it.start(path)
 
     def do(it, pathname):
@@ -132,8 +135,8 @@ class pShow(walk):
 
 class pSize(walk):
     """size command"""
-    def __init__(it, ptype, interval, path):
-        super().__init__(ptype, interval)
+    def __init__(it, ptype, interval, recursive, path):
+        super().__init__(ptype, interval, recursive)
         it.size = 0
         it.start(path)
 
@@ -150,8 +153,8 @@ class pSize(walk):
 
 class pJpegtran(walk):
     """jpegtran command"""
-    def __init__(it, ptype, interval, path):
-        super().__init__(ptype, interval)
+    def __init__(it, ptype, interval, recursive, path):
+        super().__init__(ptype, interval, recursive)
         it.saved = 0
         it.start(path)
 

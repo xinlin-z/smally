@@ -7,7 +7,7 @@ from classes import sh, pShow, pSize, pJpegtran, NAME
 
 
 # contants
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.18 ' % NAME
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.19 ' % NAME
 
 
 def main():
@@ -26,15 +26,23 @@ def main():
         $ python3 smally.py -a /path1 --jpegtran --jpg -i 500
         Default interval time is zero.
         -i option is optional and in milliseconds unit.
+
+    3), recursive action
+        $ python3 smally.py -a /path1 --jpegtran --jpg -r
+        -r option indicates the recursive action.
+        Default behavior is not recursive, in line with other cmd tools.
     '''),
                 epilog = 'welcome to my github & blog:\n'
                          'https://github.com/xinlin-z\n'
                          'https://www.maixj.net\n'
                          'https://www.pynote.net')
+    
     parser.add_argument('-a', '--abspath', required=True, nargs='+', 
                     help='absolute path for the picture folder, support ~')
     parser.add_argument('-i', '--interval', type=int,
                         help='interval time in milliseconds')
+    parser.add_argument('-r', '--recursive', action='store_true',
+                        help='recursive into sub-folders')
     parser.add_argument('--jpg', action='store_true', 
                             help='for both .jpg and .jpeg suffix')
     parser.add_argument('--png', action='store_true')
@@ -76,16 +84,16 @@ def main():
     # actions 
     if args.show: 
         if sh.which('identify') is False: sys.exit(1) 
-        pShow(ptype, interval, args.abspath)
+        pShow(ptype, interval, args.recursive, args.abspath)
     if args.size:
-        pSize(ptype, interval, args.abspath)
+        pSize(ptype, interval, args.recursive, args.abspath)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
             print('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)
-        pJpegtran(ptype, interval, args.abspath)
+        pJpegtran(ptype, interval, args.recursive, args.abspath)
 
 
 if __name__ == '__main__':

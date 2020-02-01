@@ -13,7 +13,7 @@ VER = '%s: compress JPGs losslessly in batch mode and more... V0.19 ' % NAME
 def main():
     parser = argparse.ArgumentParser(
                 formatter_class = argparse.RawDescriptionHelpFormatter,
-                description = f'{VER}' + textwrap.dedent('''
+                description = VER + textwrap.dedent('''
     
     Usage Examples:
 

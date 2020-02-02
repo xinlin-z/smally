@@ -27,7 +27,7 @@ def main():
         Default interval time is zero.
         -i option is optional and in milliseconds unit.
 
-    3), recursive action
+    3), recurse into sub-folders 
         $ python3 smally.py -a /path1 --jpegtran --jpg -r
         -r option indicates the recursive action.
         Default behavior is not recursive, in line with other cmd tools.
@@ -37,6 +37,14 @@ def main():
         -k option indicates the mtime would not be changed while the
         compressing process. By default, new compressed file will get a new
         mtime stamp.
+
+    5), set time window to skip old file in your routine
+        $ python3 smally.py -a /path1 --jpegtran --jpg -t 86400
+        -t 86400 means the time window is 1 day. If the distance between 
+        file mtime and now is within this specific time window, action will
+        be applied to this file, otherwise it will be skipped.
+        To keep mtime of compressed file unchanged, you need -k option.
+        -t is optional, time window is infinite if not configured.
     '''),
                 epilog = 'Smally project page: '
                          'https://github.com/xinlin-z/smally\n'
@@ -51,6 +59,9 @@ def main():
                         help='recursive into sub-folders')
     parser.add_argument('-k', '--keepmtime', action='store_true',
                         help='keep the mtime untouched after compressing')
+    parser.add_argument('-t', '--timewindow', type=float, 
+                    help='apply action to files those now - mtime is '
+                         'in time window (seconds ,float and positive)')
     parser.add_argument('--jpg', action='store_true', 
                             help='for both .jpg and .jpeg suffix')
     parser.add_argument('--png', action='store_true')
@@ -89,19 +100,24 @@ def main():
         else: 
             print('%s: Interval time must be positive.' % NAME)
             sys.exit(1)
+    # time window
+    if args.timewindow != None:
+        if args.timewindow <= 0:
+            print('%s: Time window must be positive.' % NAME)
+            sys.exit(1)
     # actions 
     if args.show: 
         if sh.which('identify') is False: sys.exit(1) 
-        pShow(ptype, interval, args.recursive, args.abspath)
+        pShow(ptype, interval, args.recursive, args.timewindow, args.abspath)
     if args.size:
-        pSize(ptype, interval, args.recursive, args.abspath)
+        pSize(ptype, interval, args.recursive, args.timewindow, args.abspath)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
             print('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)
-        pJpegtran(ptype, interval, args.recursive, 
+        pJpegtran(ptype, interval, args.recursive, args.timewindow,  
                   args.abspath, args.keepmtime)
 
 

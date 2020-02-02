@@ -3,6 +3,7 @@ import os
 import sys
 from stat import *
 import time
+from datetime import datetime
 import subprocess
 
 
@@ -66,13 +67,15 @@ class sh():
 
 class walk(): 
     """Walk tree and callback according to ptype."""
-    def __init__(it, ptype, interval, recursive=False):
+    def __init__(it, ptype, interval, recursive, timewindow):
         it.total = 0            # file number scanned
         it.num_call = 0         # file number processed
         it.num_do = 0           # file number did meaningful action
         it.ptype = ptype
         it.interval = interval
         it.recursive = recursive
+        it.now = datetime.now()
+        it.tw = timewindow
 
     def incr_num_do(it):
         """called by subclass action section"""
@@ -82,10 +85,15 @@ class walk():
         pass  # please override in subclass if needed
 
     def check(it, pathname):
+        # check file itself
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
             print(pathname + FILE_WRONG)
             return False
+        # check time window
+        if it.tw != None: 
+            td = it.now - datetime.fromtimestamp(os.path.getmtime(pathname))
+            if td.total_seconds() > it.tw: return False
         return True
 
     def after(it):
@@ -123,8 +131,8 @@ class walk():
 
 class pShow(walk):
     """show command"""
-    def __init__(it, ptype, interval, recursive, path):
-        super().__init__(ptype, interval, recursive)
+    def __init__(it, ptype, interval, recursive, timewindow, path):
+        super().__init__(ptype, interval, recursive, timewindow)
         it.start(path)
 
     def do(it, pathname):
@@ -135,8 +143,8 @@ class pShow(walk):
 
 class pSize(walk):
     """size command"""
-    def __init__(it, ptype, interval, recursive, path):
-        super().__init__(ptype, interval, recursive)
+    def __init__(it, ptype, interval, recursive, timewindow, path):
+        super().__init__(ptype, interval, recursive, timewindow)
         it.size = 0
         it.start(path)
 
@@ -153,8 +161,8 @@ class pSize(walk):
 
 class pJpegtran(walk):
     """jpegtran command"""
-    def __init__(it, ptype, interval, recursive, path, keepmtime):
-        super().__init__(ptype, interval, recursive)
+    def __init__(it, ptype, interval, recursive, timewindow, path, keepmtime):
+        super().__init__(ptype, interval, recursive, timewindow)
         it.saved = 0
         it.kmt = keepmtime
         it.start(path)

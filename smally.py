@@ -31,10 +31,16 @@ def main():
         $ python3 smally.py -a /path1 --jpegtran --jpg -r
         -r option indicates the recursive action.
         Default behavior is not recursive, in line with other cmd tools.
+
+    4), keep mtime unchanged
+        $ python3 smally.py -a /path1 --jpegtran --jpg -k
+        -k option indicates the mtime would not be changed while the
+        compressing process. By default, new compressed file will get a new
+        mtime stamp.
     '''),
-                epilog = 'welcome to my github & blog:\n'
-                         'https://github.com/xinlin-z\n'
-                         'https://www.maixj.net\n'
+                epilog = 'Smally project page: '
+                         'https://github.com/xinlin-z/smally\n'
+                         'Author\'s python note blog: '
                          'https://www.pynote.net')
     
     parser.add_argument('-a', '--abspath', required=True, nargs='+', 
@@ -43,6 +49,8 @@ def main():
                         help='interval time in milliseconds')
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='recursive into sub-folders')
+    parser.add_argument('-k', '--keepmtime', action='store_true',
+                        help='keep the mtime untouched after compressing')
     parser.add_argument('--jpg', action='store_true', 
                             help='for both .jpg and .jpeg suffix')
     parser.add_argument('--png', action='store_true')
@@ -93,7 +101,8 @@ def main():
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)
-        pJpegtran(ptype, interval, args.recursive, args.abspath)
+        pJpegtran(ptype, interval, args.recursive, 
+                  args.abspath, args.keepmtime)
 
 
 if __name__ == '__main__':

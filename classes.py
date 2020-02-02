@@ -153,9 +153,10 @@ class pSize(walk):
 
 class pJpegtran(walk):
     """jpegtran command"""
-    def __init__(it, ptype, interval, recursive, path):
+    def __init__(it, ptype, interval, recursive, path, keepmtime):
         super().__init__(ptype, interval, recursive)
         it.saved = 0
+        it.kmt = keepmtime
         it.start(path)
 
     def after(it):
@@ -165,6 +166,11 @@ class pJpegtran(walk):
                 str(round(it.saved/1024/1024/1024,4))+'G,',
                 str(it.num_do)+'/'+str(it.num_call)+'/'+str(it.total))
         
+    def mtimeStr(it, pathname):
+        """get time string can be used by touch -d option"""
+        _, out, _ = sh.cmd('stat -c "%y" ' + pathname)
+        return out.decode()
+
     def do(it, pathname):
         try:
             basename = os.path.basename(pathname)
@@ -202,14 +208,16 @@ class pJpegtran(walk):
             if select_file == 0:  # origin
                 os.remove(file_1)
                 os.remove(file_2)
-                if sh.isProgressive(pathname) is True:
-                    print('-- [p]')
+                if sh.isProgressive(pathname) is True: print('-- [p]')
                 else: print('-- [b]')
-            else: it.incr_num_do()
+            else: 
+                it.incr_num_do()
+                if it.kmt: mtime = it.mtimeStr(pathname)
             if select_file == 1:  # baseline
                 os.remove(pathname)
                 os.remove(file_2)
                 os.rename(file_1, pathname)
+                if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_1
                 print('-'+str(saved),'-'+str(round(saved/size*100,2))
                          +'%','[b]')
@@ -218,6 +226,7 @@ class pJpegtran(walk):
                 os.remove(pathname)
                 os.remove(file_1)
                 os.rename(file_2, pathname)
+                if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_2
                 print('-'+str(saved),'-'+str(round(saved/size*100,2))
                          +'%','[p]')

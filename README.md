@@ -103,10 +103,24 @@ Only show info of compressed if there are too many pictures:
 
 ## Get Help
     
+There are many usage examples in help info.
+
     $ python3 smally.py -h
+
+**-a** option is used to indicate one or more absolute path.
 
 **-i** option is used to add time interval (milliseconds) between each 
 piture's process. This may be helpful in your busy production server.
+
+**-r** option is used to recurse sub folders. The default behavior is not
+recursive.
+
+**-k** option is used to keep the mtime of compressed file unchanged. This 
+is useful with -t option in case you have a daily routine to compress.
+
+**-t** option is used to set a time window in seconds. Only the files are not
+old than the time window compute from now would took action. While --jpegtran,
+-k option should be used with -t together.
 
 ## Show Pictures' Info
 
@@ -172,6 +186,12 @@ Example for calculating all GIFs and PNGs total size:
 You can not use smally to get a single picture's size, please use ls -l.
 
 # Version
+
+* **2020-02-06 V0.19**
+    - add -r option
+    - add -k option
+    - add -t option
+    - tweak -a option behevior, which can take more than one path
 
 * **2020-01-29 V0.18**
     - refactor code completely into OOP way

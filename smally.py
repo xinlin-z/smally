@@ -45,12 +45,24 @@ def main():
         be applied to this file, otherwise it will be skipped.
         To keep mtime of compressed file unchanged, you need -k option.
         -t is optional, time window is infinite if not configured.
+
+    6), calculate size
+        $ python3 smally.py -a /path --size --jpg
+        Calculate the total JPGs size in /path. You can combine --size with
+        -r, -i, -t option. -k option is useless with --size.
+        $ python3 smally.py -a /path --size --jpg --png --gif --webp
+        Calculate the total size of all 4 types of pictures.
+
+    7), show info of picture file
+        $ python3 smally.py -a /path --show --jpg --png
+        Show all JPGs and PNGs in /path. You can combine --show with
+        -r, -k, -t option. -k option is useless with --show.
     '''),
                 epilog = 'Smally project page: '
                          'https://github.com/xinlin-z/smally\n'
                          'Author\'s python note blog: '
-                         'https://www.pynote.net')
-    
+                         'https://www.pynote.net'
+    )
     parser.add_argument('-a', '--abspath', required=True, nargs='+', 
                     help='absolute path for the picture folder, support ~')
     parser.add_argument('-i', '--interval', type=int,

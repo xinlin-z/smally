@@ -39,13 +39,13 @@ Don't forget **sudo** when you encounter the Permission denied!
 ## Compress JPGs Losslessly in Batch Mode
 
 Use -a to indicate your picture folder path, which should be an absolute path.
--a parameter is mandatory.
+-a parameter is mandatory, and use -r to recurse sub folders.
 
 Use --jpegtran --jpg to compress JPGs losslessly in batch mode.
 
 Example:
 
-    $ python3 smally.py -a ~/path/to/pic --jpegtran --jpg
+    $ python3 smally.py -a ~/path/to/pic -r --jpegtran --jpg
     /pics/vim_cheat_sheet.jpg -- [p]
     /pics/firefox_ca_info.jpg -- [p]
     /pics/reset_firefox.jpg -- [p]
@@ -128,7 +128,7 @@ Use --show to get pictures' info.
 
 Example for showing JPGs' info only:    
 
-    $ python3 smally.py -a ~/path/to/pic --show --jpg
+    $ python3 smally.py -a ~/uploads/2019/01 --show --jpg
     /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg 400x224 18.37K
     /home/pic/uploads/2019/01/stepstone-768x512.jpg 768x512 94.33K
     /home/pic/uploads/2019/01/ieee754-2008-200x112.jpg 200x112 6.29K
@@ -147,9 +147,9 @@ Example for showing JPGs' info only:
     /home/pic/uploads/2019/01/juanji.jpg 662x426 27.96K
     /home/pic/uploads/2019/01/juanji-200x129.jpg 200x129 6.26K
 
-Example for showing both JPGs and PNGs:
+Example for showing both JPGs and PNGs recursively:
     
-    $ python3 smally.py -a ~/path/to/pic --show --jpg --png
+    $ python3 smally.py -a ~/path/to/pic -r --show --jpg --png
 
 So, there are 4 parameters to indicate picture file type, --jpg, --png, --gif 
 and --webp. They can be all presented in command line, and must be at least 
@@ -160,19 +160,20 @@ such as sort, grep...Here are several examples:
 
 Show how many JPGs you have:
 
-    $ python3 smally.py -a ~/path/to/pic --show --jpg | wc -l
+    $ python3 smally.py -a ~/path/to/pic -r --show --jpg | wc -l
 
 Show your Top10 PNG picture in size:
 
-    $ python3 smally.py -a ~/path/to/pic --show --png | sort -k3nr | head
+    $ python3 smally.py -a ~/path/to/pic -r --show --png | sort -k3nr | head
 
 Show all your JPGs which are bigger than 1000K:
 
-    $ python3 smally.py -a ~/path/pic --show --jpg | grep -E "\s[0-9]{4}.*K$"
+    $ python3 smally.py -a ~/path/pic -r --show --jpg | grep -E \
+            "\s[0-9]{4}.*K$"
 
 Show all JPGs whose width is lager than 768 pixel:
 
-    $ python3 smally.py -a ~/path/to/pic --show --jpg | grep -E \
+    $ python3 smally.py -a ~/path/to/pic -r --show --jpg | grep -E \
             "\s(769|[7-9][7-9][0-9]|[8|9][0-9]{2}|[0-9]{4,})x.*\s"
 
 ## Calculate Pictures' Total Size
@@ -181,7 +182,7 @@ Use --size to calculate pictures' total size in the folder you spcefied.
 
 Example for calculating all GIFs and PNGs total size:
 
-    $ python3 smally.py -a ~/path/to/pic --size --gif --png
+    $ python3 smally.py -a ~/path/to/pic -r --size --gif --png
 
 You can not use smally to get a single picture's size, please use ls -l.
 

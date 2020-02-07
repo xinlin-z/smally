@@ -38,14 +38,15 @@ Don't forget **sudo** when you encounter the Permission denied!
 
 ## Compress JPGs Losslessly in Batch Mode
 
-Use -a to indicate your picture folder path, which should be an absolute path.
--a parameter is mandatory, and use -r to recurse sub folders.
+Use -a to indicate your picture folder path, which should be one or more 
+absolute path. -a parameter is mandatory, and use -r to recurse sub folders,
+and use -k to keep the compressed file's mtime unchanged.
 
 Use --jpegtran --jpg to compress JPGs losslessly in batch mode.
 
 Example:
 
-    $ python3 smally.py -a ~/path/to/pic -r --jpegtran --jpg
+    $ python3 smally.py -a ~/path/to/pic -r -k --jpegtran --jpg
     /pics/vim_cheat_sheet.jpg -- [p]
     /pics/firefox_ca_info.jpg -- [p]
     /pics/reset_firefox.jpg -- [p]
@@ -98,7 +99,7 @@ infomation which represents the smally's workout.
 
 Only show info of compressed if there are too many pictures:
 
-    $ python3 smally.py -a ~/path/to/pic --jpegtran --jpg | \
+    $ python3 smally.py -a ~/path/to/pic -r -k --jpegtran --jpg | \
             grep -E "\s-[0-9]{1,}\s"
 
 ## Get Help

@@ -85,15 +85,15 @@ class walk():
         pass  # please override in subclass if needed
 
     def check(it, pathname):
+        # check time window
+        if it.tw != None: 
+            td = it.now - datetime.fromtimestamp(os.path.getmtime(pathname))
+            if td.total_seconds() > it.tw: return False
         # check file itself
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
             print(pathname + FILE_WRONG)
             return False
-        # check time window
-        if it.tw != None: 
-            td = it.now - datetime.fromtimestamp(os.path.getmtime(pathname))
-            if td.total_seconds() > it.tw: return False
         return True
 
     def after(it):

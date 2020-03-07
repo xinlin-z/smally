@@ -92,7 +92,7 @@ class walk():
         # check file itself
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
-            print(pathname + FILE_WRONG)
+            print(os.path.abspath(pathname) + FILE_WRONG)
             return False
         return True
 
@@ -137,7 +137,8 @@ class pShow(walk):
 
     def do(it, pathname):
         size = os.path.getsize(pathname)
-        print(pathname, sh.getWxH(pathname), str(round(size/1024,2))+'K')
+        print(os.path.abspath(pathname), 
+              sh.getWxH(pathname), str(round(size/1024,2))+'K')
         it.incr_num_do()
 
 
@@ -212,7 +213,7 @@ class pJpegtran(walk):
                 if size_2 <= size_1: select_file = 2  
                 else: select_file = 1
             # rm & mv
-            print(pathname, end=' ')
+            print(os.path.abspath(pathname), end=' ')
             if select_file == 0:  # origin
                 os.remove(file_1)
                 os.remove(file_2)

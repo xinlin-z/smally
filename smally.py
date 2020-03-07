@@ -7,7 +7,7 @@ from classes import sh, pShow, pSize, pJpegtran, NAME
 
 
 # contants
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.19 ' % NAME
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.20 ' % NAME
 
 
 def main():
@@ -18,28 +18,28 @@ def main():
     Usage Examples:
 
     1), compress JPGs lossless in batch mode
-        $ python3 smally.py -a /path1 /path2 --jpegtran --jpg
-        -a option is mandatory and must have one absolute path at least.
+        $ python3 smally.py -p path1 path2 --jpegtran --jpg
+        -p option is mandatory and must have one path argument at least.
         Only --jpg can be combined with --jpegtran.
 
     2), add interval time between each picture processed
-        $ python3 smally.py -a /path1 --jpegtran --jpg -i 500
+        $ python3 smally.py -p path1 --jpegtran --jpg -i 500
         Default interval time is zero.
         -i option is optional and in milliseconds unit.
 
     3), recurse into sub-folders 
-        $ python3 smally.py -a /path1 --jpegtran --jpg -r
+        $ python3 smally.py -p path1 --jpegtran --jpg -r
         -r option indicates the recursive action.
         Default behavior is not recursive, in line with other cmd tools.
 
     4), keep mtime unchanged
-        $ python3 smally.py -a /path1 --jpegtran --jpg -k
+        $ python3 smally.py -p path1 --jpegtran --jpg -k
         -k option indicates the mtime would not be changed while the
         compressing process. By default, new compressed file will get a new
         mtime stamp.
 
     5), set time window to skip old file in your routine
-        $ python3 smally.py -a /path1 --jpegtran --jpg -t 86400
+        $ python3 smally.py -p path1 --jpegtran --jpg -t 86400
         -t 86400 means the time window is 1 day. If the distance between 
         file mtime and now is within this specific time window, action will
         be applied to this file, otherwise it will be skipped.
@@ -47,15 +47,15 @@ def main():
         -t is optional, time window is infinite if not configured.
 
     6), calculate size
-        $ python3 smally.py -a /path --size --jpg
+        $ python3 smally.py -p path --size --jpg
         Calculate the total JPGs size in /path. You can combine --size with
         -r, -i, -t option. -k option is useless with --size.
-        $ python3 smally.py -a /path --size --jpg --png --gif --webp
+        $ python3 smally.py -p path --size --jpg --png --gif --webp
         Calculate the total size of all 4 types of pictures.
 
     7), show info of picture file
-        $ python3 smally.py -a /path --show --jpg --png
-        Show all JPGs and PNGs in /path. You can combine --show with
+        $ python3 smally.py -p path --show --jpg --png
+        Show all JPGs and PNGs in path. You can combine --show with
         -r, -k, -t option. -k option is useless with --show.
     '''),
                 epilog = 'Smally project page: '
@@ -63,8 +63,8 @@ def main():
                          'Author\'s python note blog: '
                          'https://www.pynote.net'
     )
-    parser.add_argument('-a', '--abspath', required=True, nargs='+', 
-                    help='absolute path for the picture folder, support ~')
+    parser.add_argument('-p', '--paths', required=True, nargs='+', 
+                    help='paths for the picture folder')
     parser.add_argument('-i', '--interval', type=int,
                         help='interval time in milliseconds')
     parser.add_argument('-r', '--recursive', action='store_true',
@@ -90,11 +90,10 @@ def main():
     # version info
     parser.add_argument('-V','--version',action='version',version=VER)
     args = parser.parse_args()  # ~ will be expanded
-    # check path
-    for path in args.abspath:
-        if (not os.path.isabs(path) or
-            not os.path.exists(path)):
-            print('%s: All paths must be absolute and existed.' % NAME)
+    # check paths
+    for path in args.paths:
+        if not os.path.exists(path):
+            print('%s: path %s is not existed.' % (NAME,path))
             sys.exit(1)
     # check picture type
     ptype = []
@@ -120,9 +119,9 @@ def main():
     # actions 
     if args.show: 
         if sh.which('identify') is False: sys.exit(1) 
-        pShow(ptype, interval, args.recursive, args.timewindow, args.abspath)
+        pShow(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.size:
-        pSize(ptype, interval, args.recursive, args.timewindow, args.abspath)
+        pSize(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
             print('%s: --jpegtran only support JPG.' % NAME)
@@ -130,7 +129,7 @@ def main():
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)
         pJpegtran(ptype, interval, args.recursive, args.timewindow,  
-                  args.abspath, args.keepmtime)
+                  args.paths, args.keepmtime)
 
 
 if __name__ == '__main__':

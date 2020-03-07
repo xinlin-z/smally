@@ -38,15 +38,15 @@ Don't forget **sudo** when you encounter the Permission denied!
 
 ## Compress JPGs Losslessly in Batch Mode
 
-Use -a to indicate your picture folder path, which should be one or more 
-absolute path. -a parameter is mandatory, and use -r to recurse sub folders,
+Use -p to indicate your picture folder path, which should be one or more 
+existed paths. -p parameter is mandatory, and use -r to recurse sub folders,
 and use -k to keep the compressed file's mtime unchanged.
 
 Use --jpegtran --jpg to compress JPGs losslessly in batch mode.
 
 Example:
 
-    $ python3 smally.py -a ~/path/to/pic -r -k --jpegtran --jpg
+    $ python3 smally.py -p path/to/pic -r -k --jpegtran --jpg
     /pics/vim_cheat_sheet.jpg -- [p]
     /pics/firefox_ca_info.jpg -- [p]
     /pics/reset_firefox.jpg -- [p]
@@ -99,7 +99,7 @@ infomation which represents the smally's workout.
 
 Only show info of compressed if there are too many pictures:
 
-    $ python3 smally.py -a ~/path/to/pic -r -k --jpegtran --jpg | \
+    $ python3 smally.py -p path/to/pic -r -k --jpegtran --jpg | \
             grep -E "\s-[0-9]{1,}\s"
 
 ## Get Help
@@ -108,7 +108,7 @@ There are many usage examples in help info.
 
     $ python3 smally.py -h
 
-**-a** option is used to indicate one or more absolute path.
+**-p** option is used to indicate one or more existed paths.
 
 **-i** option is used to add time interval (milliseconds) between each 
 piture's process. This may be helpful in your busy production server.
@@ -129,7 +129,7 @@ Use --show to get pictures' info.
 
 Example for showing JPGs' info only:    
 
-    $ python3 smally.py -a ~/uploads/2019/01 --show --jpg
+    $ python3 smally.py -p uploads/2019/01 --show --jpg
     /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg 400x224 18.37K
     /home/pic/uploads/2019/01/stepstone-768x512.jpg 768x512 94.33K
     /home/pic/uploads/2019/01/ieee754-2008-200x112.jpg 200x112 6.29K
@@ -150,7 +150,7 @@ Example for showing JPGs' info only:
 
 Example for showing both JPGs and PNGs recursively:
     
-    $ python3 smally.py -a ~/path/to/pic -r --show --jpg --png
+    $ python3 smally.py -p path/to/pic -r --show --jpg --png
 
 So, there are 4 parameters to indicate picture file type, --jpg, --png, --gif 
 and --webp. They can be all presented in command line, and must be at least 
@@ -161,20 +161,20 @@ such as sort, grep...Here are several examples:
 
 Show how many JPGs you have:
 
-    $ python3 smally.py -a ~/path/to/pic -r --show --jpg | wc -l
+    $ python3 smally.py -p path/to/pic -r --show --jpg | wc -l
 
 Show your Top10 PNG picture in size:
 
-    $ python3 smally.py -a ~/path/to/pic -r --show --png | sort -k3nr | head
+    $ python3 smally.py -p path/to/pic -r --show --png | sort -k3nr | head
 
 Show all your JPGs which are bigger than 1000K:
 
-    $ python3 smally.py -a ~/path/pic -r --show --jpg | grep -E \
+    $ python3 smally.py -p path/to/pic -r --show --jpg | grep -E \
             "\s[0-9]{4}.*K$"
 
 Show all JPGs whose width is lager than 768 pixel:
 
-    $ python3 smally.py -a ~/path/to/pic -r --show --jpg | grep -E \
+    $ python3 smally.py -p path/to/pic -r --show --jpg | grep -E \
             "\s(769|[7-9][7-9][0-9]|[8|9][0-9]{2}|[0-9]{4,})x.*\s"
 
 ## Calculate Pictures' Total Size
@@ -183,11 +183,14 @@ Use --size to calculate pictures' total size in the folder you spcefied.
 
 Example for calculating all GIFs and PNGs total size:
 
-    $ python3 smally.py -a ~/path/to/pic -r --size --gif --png
+    $ python3 smally.py -p path/to/pic -r --size --gif --png
 
 You can not use smally to get a single picture's size, please use ls -l.
 
 # Version
+
+* **2020-03-07 V0.20**
+    - change -a to -p, which can take one or more relevant paths now
 
 * **2020-02-06 V0.19**
     - add -r option
@@ -200,32 +203,27 @@ You can not use smally to get a single picture's size, please use ls -l.
     - tweak show info while jpegtran jpg process (n/m --> l/n/m)
 
 * **2019-12-31 V0.17**
-
     - add -i option
     - restore and delete temporary while exceptions
     - bugfix and code optimization
     - rewrite README.md 
 
 * **2019-09-17 V0.16**
-    
     - add percentage info while compressing
     - slightly structure optimization
 
 * **2019-08-30 V0.15**
-
     - count the number of compressed jpg
     - change several return to sys.exit(1)
     - tweaks
 
 * **2019-08-24 V0.12**
-
     - add width x height info in show cmd
     - optimize algo
     - update readme.md
     - tweaks and bugfix
 
 * **2019-08-19 V0.09**
-
     - The first release.
 
 

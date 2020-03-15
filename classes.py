@@ -9,7 +9,7 @@ import subprocess
 
 # contants
 NAME = '[smally]'
-FILE_WRONG = '__Wrong_File_Data_or_Name'
+FILE_WRONG = ' __Wrong_File_Data_or_Name'
 
 
 class sh():
@@ -69,6 +69,7 @@ class walk():
     """Walk tree and callback according to ptype."""
     def __init__(it, ptype, interval, recursive, timewindow):
         it.total = 0            # file number scanned
+        it.num_error = 0        # file number error
         it.num_call = 0         # file number processed
         it.num_do = 0           # file number did meaningful action
         it.ptype = ptype
@@ -93,6 +94,7 @@ class walk():
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
             print(os.path.abspath(pathname) + FILE_WRONG)
+            it.num_error += 1
             return False
         return True
 
@@ -173,7 +175,10 @@ class pJpegtran(walk):
                 str(round(it.saved/1024,2))+'K,',
                 str(round(it.saved/1024/1024,3))+'M,',
                 str(round(it.saved/1024/1024/1024,4))+'G,',
-                str(it.num_do)+'/'+str(it.num_call)+'/'+str(it.total))
+                str(it.num_do)
+                    +'/'+str(it.num_call)
+                    +'/'+str(it.num_error)
+                    +'/'+str(it.total))
         
     def mtimeStr(it, pathname):
         """get time string can be used by touch -d option"""

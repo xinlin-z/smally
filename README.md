@@ -70,12 +70,13 @@ Example:
     /pics/firefox_ca_info-400x448.jpg -4038 -8.19% [p]
     /pics/bitmap-200x83.jpg -680 -9.55% [p]
     /pics/tplink_dns.jpg -- [p]
+    /pics/001.jpg __Wrong_File_Data_or_Name
     /pics/tplink_dns-768x542.jpg -5194 -13.35% [p]
     /pics/firefox_ca_info-134x150.jpg -479 -6.57% [b]
     /pics/firefox_privacy-400x98.jpg -857 -9.63% [p]
     /pics/tplink_dns-400x282.jpg -1420 -9.49% [p]
     /pics/dns_jumper-400x184.jpg -2355 -10.96% [p]
-    [smally]: total saved: 31315, 30.58K, 0.03M, 0.0G, 19/28/123
+    [smally]: total saved: 31315, 30.58K, 0.03M, 0.0G, 19/28/1/124
 
 
 Explain:
@@ -93,9 +94,10 @@ infomation which represents the smally's workout.
 
 **[p]** : means to choose progressive JPG format finally
 
-**l/n/m** : means there are total m file scanned,
-            with n of them are called compress procedure,
-            with l of them are really compressed.
+**c/n/e/t** : means there are total t file scanned,
+              with e of them detected error(file data or name prefix with -),
+              with n of them are called compress procedure,
+              with c of them are really compressed.
 
 Only show info of compressed if there are too many pictures:
 
@@ -121,7 +123,12 @@ is useful with -t option in case you have a daily routine to compress.
 
 **-t** option is used to set a time window in seconds. Only the files are not
 old than the time window compute from now would took action. While --jpegtran,
--k option should be used with -t together.
+-k option should be used with -t together. 
+
+Pay attention: While jpegtran JPGs in batch mode, the check of time window is 
+ahead of the check of file itself. So, the e in c/n/e/t info is only the 
+accumulated number within the time window, and the e+n means all the 
+candidating file among the t scanned.
 
 ## Show Pictures' Info
 

@@ -1,13 +1,19 @@
 #!/usr/bin/env python3 
 import os
 import sys
+import logging
 import argparse
 import textwrap
 from classes import sh, pShow, pSize, pJpegtran, NAME 
 
 
+log = logging.getLogger()  # get root logger
+logging.basicConfig(stream=sys.stdout,
+                    format="%(message)s", level=logging.INFO)
+
+
 # contants
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.20 ' % NAME
+VER = '%s: compress JPGs losslessly in batch mode and more... V0.21 ' % NAME
 
 
 def main():
@@ -93,7 +99,7 @@ def main():
     # check paths
     for path in args.paths:
         if not os.path.exists(path):
-            print('%s: path %s is not existed.' % (NAME,path))
+            log.info('%s: path %s is not existed.' % (NAME,path))
             sys.exit(1)
     # check picture type
     ptype = []
@@ -102,19 +108,19 @@ def main():
     if args.gif: ptype.append('.gif')
     if args.webp: ptype.append('.webp')
     if ptype == []:
-        print('%s: No picture type choosed.' % NAME)
+        log.info('%s: No picture type choosed.' % NAME)
         sys.exit(1)
     # interval
     interval = 0.0
     if args.interval != None:
         if args.interval >= 0: interval = args.interval/1000
         else: 
-            print('%s: Interval time must be positive.' % NAME)
+            log.info('%s: Interval time must be positive.' % NAME)
             sys.exit(1)
     # time window
     if args.timewindow != None:
         if args.timewindow <= 0:
-            print('%s: Time window must be positive.' % NAME)
+            log.info('%s: Time window must be positive.' % NAME)
             sys.exit(1)
     # actions 
     if args.show: 
@@ -124,7 +130,7 @@ def main():
         pSize(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
-            print('%s: --jpegtran only support JPG.' % NAME)
+            log.info('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         if sh.which('identify') is False: sys.exit(1)

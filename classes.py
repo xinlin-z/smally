@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 import os
 import sys
+import logging
 from stat import *
 import time
 from datetime import datetime
 import subprocess
+
+
+# use root logger
+log = logging.getLogger()
 
 
 # contants
@@ -34,8 +39,8 @@ class sh():
         cmd_str = 'which %s' % cmd
         rcode, _, err = sh.cmd(cmd_str)
         if rcode != 0:
-            print('%s: %s can not be found in $PATH ' % (NAME,cmd))
-            print(err.decode())
+            log.error('%s: %s can not be found in $PATH ' % (NAME,cmd))
+            log.error(err.decode())
             return False
         return True
 
@@ -45,8 +50,8 @@ class sh():
         cmd = 'identify %s | cut -d" " -f 3 | head -n1' % pathname
         rcode, out, err = sh.cmd(cmd)
         if rcode != 0:
-            print('%s: error while identify jpg width x height' % NAME)
-            print(err.decode())
+            log.error('%s: error while identify jpg width x height' % NAME)
+            log.error(err.decode())
             sys.exit(1)
         wh = out.decode()
         return wh[:len(wh)-1]
@@ -57,8 +62,8 @@ class sh():
         cmd = 'identify -verbose %s | grep Interlace' % pathname
         rcode, out, err = sh.cmd(cmd)
         if rcode != 0:
-            print('%s: error while identify jpg format' % NAME)
-            print(err.decode())
+            log.error('%s: error while identify jpg format' % NAME)
+            log.error(err.decode())
             sys.exit(1)
         if out.decode().find('None') == -1:  # progressive found
             return True
@@ -93,7 +98,7 @@ class walk():
         # check file itself
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
-            print(os.path.abspath(pathname) + FILE_WRONG)
+            log.warning(os.path.abspath(pathname) + FILE_WRONG)
             it.num_error += 1
             return False
         return True
@@ -139,8 +144,9 @@ class pShow(walk):
 
     def do(it, pathname):
         size = os.path.getsize(pathname)
-        print(os.path.abspath(pathname), 
-              sh.getWxH(pathname), str(round(size/1024,2))+'K')
+        log.info(os.path.abspath(pathname)
+                 + ' ' + sh.getWxH(pathname)
+                 + ' ' + str(round(size/1024,2))+'K')
         it.incr_num_do()
 
 
@@ -152,10 +158,11 @@ class pSize(walk):
         it.start(path)
 
     def after(it):
-        print('%s: total size:'%NAME, str(it.size)+',',
-                str(round(it.size/1024,2))+'K,',
-                str(round(it.size/1024/1024,3))+'M,',
-                str(round(it.size/1024/1024/1024,4))+'G')
+        log.info('%s: total size: '%NAME
+                 + str(it.size) + ', '
+                 + str(round(it.size/1024,2)) + 'K, '
+                 + str(round(it.size/1024/1024,3)) + 'M, '
+                 + str(round(it.size/1024/1024/1024,4)) + 'G')
 
     def do(it, pathname):
         it.size += os.path.getsize(pathname)
@@ -171,14 +178,15 @@ class pJpegtran(walk):
         it.start(path)
 
     def after(it):
-        print('%s: total saved:'%NAME, str(it.saved)+',',
-                str(round(it.saved/1024,2))+'K,',
-                str(round(it.saved/1024/1024,3))+'M,',
-                str(round(it.saved/1024/1024/1024,4))+'G,',
-                str(it.num_do)
-                    +'/'+str(it.num_call)
-                    +'/'+str(it.num_error)
-                    +'/'+str(it.total))
+        log.info('%s: total saved: '%NAME
+                 + str(it.saved) + ', '
+                 + str(round(it.saved/1024,2)) + 'K, '
+                 + str(round(it.saved/1024/1024,3)) + 'M, '
+                 + str(round(it.saved/1024/1024/1024,4)) + 'G, '
+                 + str(it.num_do)
+                     +'/'+str(it.num_call)
+                     +'/'+str(it.num_error)
+                     +'/'+str(it.total))
         
     def mtimeStr(it, pathname):
         """get time string can be used by touch -d option"""
@@ -203,9 +211,10 @@ class pJpegtran(walk):
                     % (pathname,file_2)
             rcode, _, err = sh.cmd(cmd_2)
             if rcode != 0:
-                raise ChildProcessError('%s: error while jpegtran progressive '
-                                        'compression\n' % NAME
-                                        + err.decode())
+                raise ChildProcessError(
+                            '%s: error while jpegtran progressive '
+                            'compression\n' % NAME
+                            + err.decode())
             # choose the smallest one
             size = os.path.getsize(pathname)
             size_1 = os.path.getsize(file_1)
@@ -218,12 +227,13 @@ class pJpegtran(walk):
                 if size_2 <= size_1: select_file = 2  
                 else: select_file = 1
             # rm & mv
-            print(os.path.abspath(pathname), end=' ')
+            _log = os.path.abspath(pathname) + ' '
             if select_file == 0:  # origin
                 os.remove(file_1)
                 os.remove(file_2)
-                if sh.isProgressive(pathname) is True: print('-- [p]')
-                else: print('-- [b]')
+                if sh.isProgressive(pathname) is True: 
+                    _log += '-- [p]'
+                else: _log += '-- [b]'
             else: 
                 it.incr_num_do()
                 if it.kmt: mtime = it.mtimeStr(pathname)
@@ -233,8 +243,9 @@ class pJpegtran(walk):
                 os.rename(file_1, pathname)
                 if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_1
-                print('-'+str(saved),'-'+str(round(saved/size*100,2))
-                         +'%','[b]')
+                _log += '-' + str(saved) \
+                            + ' -' + str(round(saved/size*100,2)) + '%' \
+                            + ' [b]'
                 it.saved += saved
             if select_file == 2:  # progressive
                 os.remove(pathname)
@@ -242,12 +253,14 @@ class pJpegtran(walk):
                 os.rename(file_2, pathname)
                 if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_2
-                print('-'+str(saved),'-'+str(round(saved/size*100,2))
-                         +'%','[p]')
+                _log += '-' + str(saved) \
+                            + ' -' + str(round(saved/size*100,2)) +'%' \
+                            + ' [p]'
                 it.saved += saved
+            log.info(_log)
         # use BaseException to catch KeyboardInterrupt
         except BaseException as e: 
-            print(repr(e))
+            log.error(repr(e))
             # wash the floor, make sure delete pathname first in above code
             if os.path.exists(pathname):
                 try: os.remove(file_1)

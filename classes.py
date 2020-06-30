@@ -122,6 +122,7 @@ class walk():
                     it.go(pathname)       # directory, recurse into it
                 else: continue
             elif S_ISREG(mode) is False:
+                it.total += 1
                 continue                  # skip all non-regular file
             else:
                 it.total += 1 

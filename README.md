@@ -94,8 +94,9 @@ infomation which represents the smally's workout.
 
 **[p]** : means to choose progressive JPG format finally
 
-**c/n/e/t** : means there are total t file scanned,
-              with e of them detected error(file data or name prefix with -),
+**c/n/e/t** : means there are total t files (all kinds of files) scanned,
+              with e of them detected error (file is not picture but with 
+              picture extension or file name prefix with -),
               with n of them are called compress procedure,
               with c of them are really compressed.
 

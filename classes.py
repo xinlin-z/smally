@@ -23,7 +23,7 @@ class sh():
     def cmd(cmd, cwd=None):
         """execute a shell cmd,
         return returncode, stdout, stderr"""
-        proc = subprocess.run(cmd, shell=True, cwd=cwd, 
+        proc = subprocess.run(cmd, shell=True, cwd=cwd,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return proc.returncode, proc.stdout, proc.stderr
 
@@ -70,7 +70,7 @@ class sh():
         return False
 
 
-class walk(): 
+class walk():
     """Walk tree and callback according to ptype."""
     def __init__(it, ptype, interval, recursive, timewindow):
         it.total = 0            # file number scanned
@@ -92,7 +92,7 @@ class walk():
 
     def check(it, pathname):
         # check time window
-        if it.tw != None: 
+        if it.tw != None:
             td = it.now - datetime.fromtimestamp(os.path.getmtime(pathname))
             if td.total_seconds() > it.tw: return False
         # check file itself
@@ -113,7 +113,7 @@ class walk():
     def go(it, top):
         for f in os.listdir(top):
             pathname = os.path.join(top, f)
-            try: 
+            try:
                 mode = os.stat(pathname, follow_symlinks=False).st_mode
             except:
                 continue
@@ -125,11 +125,11 @@ class walk():
                 it.total += 1
                 continue                  # skip all non-regular file
             else:
-                it.total += 1 
+                it.total += 1
                 # get file extension
                 _, file_ext = os.path.splitext(pathname)
                 # call accordingly
-                if file_ext in it.ptype: 
+                if file_ext in it.ptype:
                     if it.check(pathname) is False:
                         continue
                     it.do(pathname)
@@ -168,7 +168,7 @@ class pSize(walk):
     def do(it, pathname):
         it.size += os.path.getsize(pathname)
         it.incr_num_do()
-        
+
 
 class pJpegtran(walk):
     """jpegtran command"""
@@ -188,7 +188,7 @@ class pJpegtran(walk):
                      +'/'+str(it.num_call)
                      +'/'+str(it.num_error)
                      +'/'+str(it.total))
-        
+
     def mtimeStr(it, pathname):
         """get time string can be used by touch -d option"""
         _, out, _ = sh.cmd('stat -c "%y" ' + pathname)
@@ -198,7 +198,7 @@ class pJpegtran(walk):
         try:
             basename = os.path.basename(pathname)
             wd = os.path.dirname(pathname)
-            # baseline 
+            # baseline
             file_1 = wd + '/'+ '__smally_jpg1_' + basename
             cmd_1 = 'jpegtran -copy none -optimize %s > %s'%(pathname,file_1)
             rcode, _, err = sh.cmd(cmd_1)
@@ -220,22 +220,22 @@ class pJpegtran(walk):
             size = os.path.getsize(pathname)
             size_1 = os.path.getsize(file_1)
             size_2 = os.path.getsize(file_2)
-            if size <= size_1 and size <= size_2: 
+            if size <= size_1 and size <= size_2:
                 select_file = 0
-                if size == size_2 and sh.isProgressive(pathname) is False: 
+                if size == size_2 and sh.isProgressive(pathname) is False:
                     select_file = 2  # progressive is preferred
             else:
-                if size_2 <= size_1: select_file = 2  
+                if size_2 <= size_1: select_file = 2
                 else: select_file = 1
             # rm & mv
             _log = os.path.abspath(pathname) + ' '
             if select_file == 0:  # origin
                 os.remove(file_1)
                 os.remove(file_2)
-                if sh.isProgressive(pathname) is True: 
+                if sh.isProgressive(pathname) is True:
                     _log += '-- [p]'
                 else: _log += '-- [b]'
-            else: 
+            else:
                 it.incr_num_do()
                 if it.kmt: mtime = it.mtimeStr(pathname)
             if select_file == 1:  # baseline
@@ -260,7 +260,7 @@ class pJpegtran(walk):
                 it.saved += saved
             log.info(_log)
         # use BaseException to catch KeyboardInterrupt
-        except BaseException as e: 
+        except BaseException as e:
             log.error(repr(e))
             # wash the floor, make sure delete pathname first in above code
             if os.path.exists(pathname):
@@ -269,7 +269,7 @@ class pJpegtran(walk):
                 try: os.remove(file_2)
                 except: pass
             else:
-                if (os.path.exists(file_1) and 
+                if (os.path.exists(file_1) and
                     os.path.exists(file_2)):
                     if os.path.getsize(file_1) >= os.path.getsize(file_2):
                         os.remove(file_1)

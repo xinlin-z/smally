@@ -71,13 +71,13 @@ def main():
     )
     parser.add_argument('-p', '--paths', required=True, nargs='+',
                     help='paths for the picture folder')
-    parser.add_argument('-i', '--interval', type=int, metavar='',
+    parser.add_argument('-i', '--interval', type=int, metavar='I',
                         help='interval time in milliseconds')
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='recursive into sub-folders')
     parser.add_argument('-k', '--keepmtime', action='store_true',
                         help='keep the mtime untouched after compressing')
-    parser.add_argument('-t', '--timewindow', type=float, metavar='',
+    parser.add_argument('-t', '--timewindow', type=float, metavar='T',
                     help='apply action to files those Now - mtime is '
                          'in time window (seconds, float and positive)')
     parser.add_argument('--jpg', action='store_true',
@@ -127,6 +127,7 @@ def main():
         if sh.which('identify') is False: sys.exit(1)
         pShow(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.size:
+        if sh.which('identify') is False: sys.exit(1)
         pSize(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:

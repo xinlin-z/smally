@@ -71,13 +71,14 @@ def main():
     )
     parser.add_argument('-p', '--paths', required=True, nargs='+',
                     help='paths for the picture folder')
-    parser.add_argument('-i', '--interval', type=int, metavar='I',
+    parser.add_argument('-i', type=int, metavar='INTERVAL', dest='interval',
                         help='interval time in milliseconds')
-    parser.add_argument('-r', '--recursive', action='store_true',
+    parser.add_argument('-r', action='store_true', dest='recursive',
                         help='recursive into sub-folders')
-    parser.add_argument('-k', '--keepmtime', action='store_true',
+    parser.add_argument('-k', action='store_true', dest='keepmtime',
                         help='keep the mtime untouched after compressing')
-    parser.add_argument('-t', '--timewindow', type=float, metavar='T',
+    parser.add_argument('-t', type=float,
+                    metavar='TIMEWINDOW', dest='timewindow',
                     help='apply action to files those Now - mtime is '
                          'in time window (seconds, float and positive)')
     parser.add_argument('--jpg', action='store_true',

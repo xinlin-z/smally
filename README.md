@@ -1,4 +1,4 @@
-# Smally
+# smally
 
 Compress JPG losslessly in batch mode and more...
 

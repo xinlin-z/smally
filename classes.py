@@ -108,6 +108,12 @@ class walk():
     def after(it):
         pass  # please override in subcleass if needed
 
+    def statInfo(it):
+        return str(it.num_do)\
+                     +'/'+str(it.num_call)\
+                     +'/'+str(it.num_error)\
+                     +'/'+str(it.total)
+
     def start(it, top):
         for path in top: it.go(path)
         it.after()
@@ -150,11 +156,7 @@ class pShow(walk):
         it.start(path)
 
     def after(it):
-        log.info('%s: display stat: '%NAME
-                 + str(it.num_do)
-                     +'/'+str(it.num_call)
-                     +'/'+str(it.num_error)
-                     +'/'+str(it.total))
+        log.info('%s: display stat: '%NAME + it.statInfo())
 
     def do(it, pathname):
         size = os.path.getsize(pathname)
@@ -177,10 +179,7 @@ class pSize(walk):
                  + str(round(it.size/1024,2)) + 'K, '
                  + str(round(it.size/1024/1024,3)) + 'M, '
                  + str(round(it.size/1024/1024/1024,4)) + 'G, '
-                 + str(it.num_do)
-                     +'/'+str(it.num_call)
-                     +'/'+str(it.num_error)
-                     +'/'+str(it.total))
+                 + it.statInfo())
 
     def do(it, pathname):
         it.size += os.path.getsize(pathname)
@@ -201,10 +200,7 @@ class pJpegtran(walk):
                  + str(round(it.saved/1024,2)) + 'K, '
                  + str(round(it.saved/1024/1024,3)) + 'M, '
                  + str(round(it.saved/1024/1024/1024,4)) + 'G, '
-                 + str(it.num_do)
-                     +'/'+str(it.num_call)
-                     +'/'+str(it.num_error)
-                     +'/'+str(it.total))
+                 + it.statInfo())
 
     def mtimeStr(it, pathname):
         """get time string can be used by touch -d option"""

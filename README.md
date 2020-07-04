@@ -2,14 +2,14 @@
 
 Compress JPG losslessly in batch mode and more...
 
-The requirements for **smally** is mainly from the picture management and 
-optimization of website. The core appeal for website are faster and faster, 
-and the core appeal for picture are smaller and smaller, and use JPGs as much 
+The requirements for **smally** is mainly from the picture management and
+optimization of website. The core appeal for website are faster and faster,
+and the core appeal for picture are smaller and smaller, and use JPGs as much
 as possible for my own opinion.
 
 Smally is highlighted by compressing JPGs losslessly in batch mode, while
-choosing the progressive JPG format file whenever it's possible. Besides, 
-smally also provides a few handy tools to find pictures according to various 
+choosing the progressive JPG format file whenever it's possible. Besides,
+smally also provides a few handy tools to find pictures according to various
 parameters.
 
 Smally only use **file extension name** to determine picture type, and skip
@@ -20,7 +20,7 @@ all files whose name are started by **-** (dash)!
 ## JPG Lossless Compression Algorithm
 
 1. use jpegtran to reduce all metadata in JPG file
-2. compare among the original file, baseline format and progressive format 
+2. compare among the original file, baseline format and progressive format
 files, choose the smallest one in size
 3. whenever possible, choose progressive format version
 
@@ -38,7 +38,7 @@ Don't forget **sudo** when you encounter the Permission denied!
 
 ## Compress JPGs Losslessly in Batch Mode
 
-Use -p to indicate your picture folder path, which should be one or more 
+Use -p to indicate your picture folder path, which should be one or more
 existed paths. -p parameter is mandatory, and use -r to recurse sub folders,
 and use -k to keep the compressed file's mtime unchanged.
 
@@ -81,7 +81,7 @@ Example:
 
 Explain:
 
-Each picture's absolute path will be printed out followed by a few column of  
+Each picture's absolute path will be printed out followed by a few column of
 infomation which represents the smally's workout.
 
 **--** : means no change in file size
@@ -95,10 +95,12 @@ infomation which represents the smally's workout.
 **[p]** : means to choose progressive JPG format finally
 
 **c/n/e/t** : means there are total t files (all kinds of files) scanned,
-              with e of them detected error (file is not picture but with 
-              picture extension or file name prefix with -),
-              with n of them are called compress (or size) procedure,
-              with c of them are really compressed (or collect size).
+          with e of them detected error (file is not picture but with
+          a picture extension or file name prefix with -),
+          with n of them are called action (show, size, compress) procedure,
+          with c of them are really do the action.
+
+In --show and --size actions, c always equals n!
 
 Only show info of compressed if there are too many pictures:
 
@@ -106,36 +108,36 @@ Only show info of compressed if there are too many pictures:
             grep -E "\s-[0-9]{1,}\s"
 
 ## Get Help
-    
+
 There are many usage examples in help info.
 
     $ python3 smally.py -h
 
 **-p** option is used to indicate one or more existed paths.
 
-**-i** option is used to add time interval (milliseconds) between each 
+**-i** option is used to add time interval (milliseconds) between each
 piture's process. This may be helpful in your busy production server.
 
 **-r** option is used to recurse sub folders. The default behavior is not
 recursive.
 
-**-k** option is used to keep the mtime of compressed file unchanged. This 
+**-k** option is used to keep the mtime of compressed file unchanged. This
 is useful with -t option in case you have a daily routine to compress.
 
 **-t** option is used to set a time window in seconds. Only the files are not
 old than the time window compute from now would took action. While --jpegtran,
--k option should be used with -t together. 
+-k option should be used with -t together.
 
-Pay attention: While jpegtran JPGs in batch mode, the check of time window is 
-ahead of the check of file itself. So, the e in c/n/e/t info is only the 
-accumulated number within the time window, and the e+n means all the 
+Pay attention: While jpegtran JPGs in batch mode, the check of time window is
+ahead of the check of file itself. So, the e in c/n/e/t info is only the
+accumulated number within the time window, and the e+n means all the
 candidating file among the t scanned.
 
 ## Show Pictures' Info
 
 Use --show to get pictures' info.
 
-Example for showing JPGs' info only:    
+Example for showing JPGs' info only:
 
     $ python3 smally.py -p uploads/2019/01 --show --jpg
     /home/pic/uploads/2019/01/ieee754-2008-400x224.jpg 400x224 18.37K
@@ -155,21 +157,18 @@ Example for showing JPGs' info only:
     /home/pic/uploads/2019/01/stepstone-400x267.jpg 400x267 34.39K
     /home/pic/uploads/2019/01/juanji.jpg 662x426 27.96K
     /home/pic/uploads/2019/01/juanji-200x129.jpg 200x129 6.26K
+    [smally]: display stat: 17/17/0/27
 
 Example for showing both JPGs and PNGs recursively:
-    
+
     $ python3 smally.py -p path/to/pic -r --show --jpg --png
 
-So, there are 4 parameters to indicate picture file type, --jpg, --png, --gif 
-and --webp. They can be all presented in command line, and must be at least 
+So, there are 4 parameters to indicate picture file type, --jpg, --png, --gif
+and --webp. They can be all presented in command line, and must be at least
 one to be presented.
 
 You are encouraged to use smally combined with other Linux command line tools,
 such as sort, grep...Here are several examples:
-
-Show how many JPGs you have:
-
-    $ python3 smally.py -p path/to/pic -r --show --jpg | wc -l
 
 Show your Top10 PNG picture in size:
 
@@ -215,7 +214,7 @@ You can not use smally to get a single picture's size, please use ls -l.
     - add -i option
     - restore and delete temporary while exceptions
     - bugfix and code optimization
-    - rewrite README.md 
+    - rewrite README.md
 
 * **2019-09-17 V0.16**
     - add percentage info while compressing

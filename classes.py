@@ -15,6 +15,8 @@ log = logging.getLogger()
 # contants
 NAME = '[smally]'
 FILE_WRONG = ' __Wrong_File_Data_or_Name'
+FILE_NONREG = ' __Not_Reg_File'
+FILE_NOTPIC = ' __Not_Pic_File_Extension'
 
 
 class sh():
@@ -123,6 +125,7 @@ class walk():
                 else: continue
             elif S_ISREG(mode) is False:
                 it.total += 1
+                log.warning(os.path.abspath(pathname) + FILE_NONREG)
                 continue                  # skip all non-regular file
             else:
                 it.total += 1
@@ -135,6 +138,9 @@ class walk():
                     it.do(pathname)
                     it.num_call += 1
                     time.sleep(it.interval)
+                else:
+                    if file_ext not in ('.jpg','.jpeg','.png','.gif','.webp'):
+                        log.warning(os.path.abspath(pathname) + FILE_NOTPIC)
 
 
 class pShow(walk):
@@ -142,6 +148,13 @@ class pShow(walk):
     def __init__(it, ptype, interval, recursive, timewindow, path):
         super().__init__(ptype, interval, recursive, timewindow)
         it.start(path)
+
+    def after(it):
+        log.info('%s: display stat: '%NAME
+                 + str(it.num_do)
+                     +'/'+str(it.num_call)
+                     +'/'+str(it.num_error)
+                     +'/'+str(it.total))
 
     def do(it, pathname):
         size = os.path.getsize(pathname)

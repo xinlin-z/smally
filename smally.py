@@ -63,6 +63,10 @@ def main():
         $ python3 smally.py -p path --show --jpg --png
         Show all JPGs and PNGs in path. You can combine --show with
         -r, -t option. -k option is useless with --show.
+
+    8), show other files
+        $ python3 smally.py -p path --show -r
+        Show all other files in path.
     '''),
                 epilog = 'smally project page: '
                          'https://github.com/xinlin-z/smally\n'
@@ -108,7 +112,7 @@ def main():
     if args.png: ptype.append('.png')
     if args.gif: ptype.append('.gif')
     if args.webp: ptype.append('.webp')
-    if ptype == []:
+    if ptype == [] and not args.show:
         log.info('%s: No picture type choosed.' % NAME)
         sys.exit(1)
     # interval

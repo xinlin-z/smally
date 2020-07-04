@@ -152,11 +152,13 @@ class walk():
 class pShow(walk):
     """show command"""
     def __init__(it, ptype, interval, recursive, timewindow, path):
+        it.ptype = ptype
         super().__init__(ptype, interval, recursive, timewindow)
         it.start(path)
 
     def after(it):
-        log.info('%s: display stat: '%NAME + it.statInfo())
+        if it.ptype != []:
+            log.info('%s: display stat: '%NAME + it.statInfo())
 
     def do(it, pathname):
         size = os.path.getsize(pathname)

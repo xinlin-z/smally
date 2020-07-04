@@ -97,8 +97,8 @@ infomation which represents the smally's workout.
 **c/n/e/t** : means there are total t files (all kinds of files) scanned,
               with e of them detected error (file is not picture but with 
               picture extension or file name prefix with -),
-              with n of them are called compress procedure,
-              with c of them are really compressed.
+              with n of them are called compress (or size) procedure,
+              with c of them are really compressed (or collect size).
 
 Only show info of compressed if there are too many pictures:
 
@@ -192,6 +192,7 @@ Use --size to calculate pictures' total size in the folder you spcefied.
 Example for calculating all GIFs and PNGs total size:
 
     $ python3 smally.py -p path/to/pic -r --size --gif --png
+    [smally]: total size: 28099, 27.44K, 0.027M, 0.0G, 5/5/0/5
 
 You can not use smally to get a single picture's size, please use ls -l.
 

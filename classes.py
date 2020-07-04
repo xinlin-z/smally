@@ -163,7 +163,11 @@ class pSize(walk):
                  + str(it.size) + ', '
                  + str(round(it.size/1024,2)) + 'K, '
                  + str(round(it.size/1024/1024,3)) + 'M, '
-                 + str(round(it.size/1024/1024/1024,4)) + 'G')
+                 + str(round(it.size/1024/1024/1024,4)) + 'G, '
+                 + str(it.num_do)
+                     +'/'+str(it.num_call)
+                     +'/'+str(it.num_error)
+                     +'/'+str(it.total))
 
     def do(it, pathname):
         it.size += os.path.getsize(pathname)

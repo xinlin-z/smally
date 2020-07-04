@@ -184,6 +184,22 @@ Show all JPGs whose width is lager than 768 pixel:
     $ python3 smally.py -p path/to/pic -r --show --jpg | grep -E \
             "\s(769|[7-9][7-9][0-9]|[8|9][0-9]{2}|[0-9]{4,})x.*\s"
 
+## Show Other Files
+
+If you don't specify the picture type while using --show command, you'll get
+all other files' info.
+
+There are three types of other files, shown as below:
+
+    $ python3 ~/repos/smally/smally.py -p . --show
+    /home/pi/test/pics/pkg.link __Not_Reg_File
+    /home/pi/test/pics/iamnotapic __Not_Pic_File_Extension
+
+Another type of other files is files with picture extensions, but are not
+pictures, or file name with prefix -.
+
+    $ python3 smally.py -p path --show --jpg --gif --png | grep __Wrong_File
+
 ## Calculate Pictures' Total Size
 
 Use --size to calculate pictures' total size in the folder you spcefied.

@@ -66,7 +66,7 @@ def main():
 
     8), show other files
         $ python3 smally.py -p path --show -r
-        Show all other files in path.
+        Show other files in path, more info in README.md.
     '''),
                 epilog = 'smally project page: '
                          'https://github.com/xinlin-z/smally\n'

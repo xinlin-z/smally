@@ -213,6 +213,13 @@ You can not use smally to get a single picture's size, please use ls -l.
 
 # Version
 
+* **2020-07-05 V0.21**
+    - replace print by logging
+    - more counting info (l/n/m --> c/n/e/t)
+    - show other files' info by --show without picture type
+    - update -h info and strip trailing whitespace
+    - bugfix
+
 * **2020-03-07 V0.20**
     - change -a to -p, which can take one or more relevant paths now
 

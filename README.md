@@ -1,10 +1,10 @@
 # smally
 
-Compress JPG losslessly in batch mode and more...
+Compress JPG & PNG losslessly in batch mode and more...
 
 The requirements for **smally** is mainly from the picture management and
-optimization of website. The core appeal for website are faster and faster,
-and the core appeal for picture are smaller and smaller, and use JPGs as much
+optimization of website. The core demand for website are faster and faster,
+and the core demand for picture are smaller and smaller, and use JPGs as much
 as possible for my own opinion.
 
 Smally is highlighted by compressing JPGs losslessly in batch mode, while
@@ -24,9 +24,15 @@ all files whose name are started by **-** (dash)!
 files, choose the smallest one in size
 3. whenever possible, choose progressive format version
 
+## PNG Lossless Compression
+
+Simply by calling Optipng to compress PNG. You can feed a compression level
+in the command line.
+
 # How to Install
 
-1. You need to make sure **jpegtran** and **identify** can be found in $PATH
+1. You need to make sure **jpegtran**, **identify** and **optipng** can be
+found in $PATH
 2. You need Python3
 3. git clone https://github.com/xinlin-z/smally
 
@@ -211,7 +217,19 @@ Example for calculating all GIFs and PNGs total size:
 
 You can not use smally to get a single picture's size, please use ls -l.
 
+## Compress PNG Losslessly in Batch Mode
+
+    $ python3 smally.py -p path -r -k --optipng o2 --png
+
+The -fix option is joined in the optipng command line, so it is possible
+that you find the size is a little bigger after compression. This is the
+cost for fixing broken png files.
+
 # Version
+
+* **2020-10-30 V0.22**
+    - add --optipng to compress PNGs
+    - refactor a little
 
 * **2020-07-05 V0.21**
     - replace print by logging

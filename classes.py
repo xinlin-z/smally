@@ -89,6 +89,11 @@ class walk():
         """called by subclass action section"""
         it.num_do += 1
 
+    def mtimeStr(it, pathname):
+        """get time string can be used by touch -d option"""
+        _, out, _ = sh.cmd('stat -c "%y" ' + pathname)
+        return out.decode()
+
     def do(it, pathname):
         pass  # please override in subclass if needed
 
@@ -100,7 +105,7 @@ class walk():
         # check file itself
         if (sh.identify(pathname) is False
               or os.path.basename(pathname)[0] == '-'):
-            log.warning(os.path.abspath(pathname) + FILE_WRONG)
+            log.warning(pathname + FILE_WRONG)
             it.num_error += 1
             return False
         return True
@@ -120,7 +125,7 @@ class walk():
 
     def go(it, top):
         for f in os.listdir(top):
-            pathname = os.path.join(top, f)
+            pathname = os.path.abspath(os.path.join(top, f))
             try:
                 mode = os.stat(pathname, follow_symlinks=False).st_mode
             except:
@@ -131,7 +136,7 @@ class walk():
                 else: continue
             elif S_ISREG(mode) is False:
                 it.total += 1
-                log.warning(os.path.abspath(pathname) + FILE_NONREG)
+                log.warning(pathname + FILE_NONREG)
                 continue                  # skip all non-regular file
             else:
                 it.total += 1
@@ -146,7 +151,7 @@ class walk():
                     time.sleep(it.interval)
                 else:
                     if file_ext not in ('.jpg','.jpeg','.png','.gif','.webp'):
-                        log.warning(os.path.abspath(pathname) + FILE_NOTPIC)
+                        log.warning(pathname + FILE_NOTPIC)
 
 
 class pShow(walk):
@@ -162,7 +167,7 @@ class pShow(walk):
 
     def do(it, pathname):
         size = os.path.getsize(pathname)
-        log.info(os.path.abspath(pathname)
+        log.info(pathname
                  + ' ' + sh.getWxH(pathname)
                  + ' ' + str(round(size/1024,2))+'K')
         it.incr_num_do()
@@ -204,11 +209,6 @@ class pJpegtran(walk):
                  + str(round(it.saved/1024/1024/1024,4)) + 'G, '
                  + it.statInfo())
 
-    def mtimeStr(it, pathname):
-        """get time string can be used by touch -d option"""
-        _, out, _ = sh.cmd('stat -c "%y" ' + pathname)
-        return out.decode()
-
     def do(it, pathname):
         try:
             basename = os.path.basename(pathname)
@@ -243,17 +243,15 @@ class pJpegtran(walk):
                 if size_2 <= size_1: select_file = 2
                 else: select_file = 1
             # rm & mv
-            _log = os.path.abspath(pathname) + ' '
+            _log = pathname + ' '
+            if it.kmt: mtime = it.mtimeStr(pathname)
             if select_file == 0:  # origin
                 os.remove(file_1)
                 os.remove(file_2)
                 if sh.isProgressive(pathname) is True:
                     _log += '-- [p]'
                 else: _log += '-- [b]'
-            else:
-                it.incr_num_do()
-                if it.kmt: mtime = it.mtimeStr(pathname)
-            if select_file == 1:  # baseline
+            elif select_file == 1:  # baseline
                 os.remove(pathname)
                 os.remove(file_2)
                 os.rename(file_1, pathname)
@@ -263,7 +261,7 @@ class pJpegtran(walk):
                             + ' -' + str(round(saved/size*100,2)) + '%' \
                             + ' [b]'
                 it.saved += saved
-            if select_file == 2:  # progressive
+            else: #  select_file == 2:  # progressive
                 os.remove(pathname)
                 os.remove(file_1)
                 os.rename(file_2, pathname)
@@ -274,10 +272,8 @@ class pJpegtran(walk):
                             + ' [p]'
                 it.saved += saved
             log.info(_log)
-        # use BaseException to catch KeyboardInterrupt
-        except BaseException as e:
-            log.error(repr(e))
-            # wash the floor, make sure delete pathname first in above code
+            it.incr_num_do()
+        except KeyboardInterrupt:
             if os.path.exists(pathname):
                 try: os.remove(file_1)
                 except: pass
@@ -295,6 +291,67 @@ class pJpegtran(walk):
                 elif os.path.exists(file_2):
                     os.rename(file_2, pathname)
                 else: os.rename(file_1, pathname)
-            sys.exit(1)
+            raise
+
+
+class pOptipng(walk):
+    """optipng command"""
+    def __init__(it, ptype, interval, recursive, timewindow,
+                 path, keepmtime, level):
+        super().__init__(ptype, interval, recursive, timewindow)
+        it.saved = 0
+        it.kmt = keepmtime
+        it.level = level
+        it.start(path)
+
+    def after(it):
+        log.info('%s: total saved: '%NAME
+                 + str(it.saved) + ', '
+                 + str(round(it.saved/1024,2)) + 'K, '
+                 + str(round(it.saved/1024/1024,3)) + 'M, '
+                 + str(round(it.saved/1024/1024/1024,4)) + 'G, '
+                 + it.statInfo())
+
+    def do(it, pathname):
+        try:
+            basename = os.path.basename(pathname)
+            wd = os.path.dirname(pathname)
+            out_file = wd + '/' + basename + '.smally.out'
+            cmd = 'optipng -fix -%s %s -out %s'%(it.level,pathname,out_file)
+            rcode, _, err = sh.cmd(cmd)
+            if rcode != 0:
+                raise ChildProcessError('%s: error while optipng '
+                                        'compression\n' % NAME
+                                        + err.decode())
+            _log = pathname + ' '
+            size_1 = os.path.getsize(pathname)
+            size_2 = os.path.getsize(out_file)
+            if size_1 == size_2:
+                _log += '--'
+                os.remove(out_file)
+            else:
+                saved = size_1 - size_2
+                it.saved += saved
+                sym = '-' if saved > 0 else '+'
+                fixed = '' if saved > 0 else 'fixed'
+                _log += sym + str(abs(saved)) \
+                            + ' ' + sym \
+                            + str(round(abs(saved)/size_2*100,2)) \
+                            + '%' + fixed
+                if it.kmt: mtime = it.mtimeStr(pathname)
+                os.remove(pathname)
+                os.rename(out_file, pathname)
+                if it.kmt:
+                    sh.cmd('touch -m -d "'+mtime+'" '+pathname)
+            log.info(_log)
+            it.incr_num_do()
+        except KeyboardInterrupt:
+            try:
+                if os.path.exists(out_file):
+                    os.remove(pathname)
+                    os.rename(out_file, pathname)
+            except:
+                pass
+            raise
 
 

@@ -4,7 +4,7 @@ import sys
 import logging
 import argparse
 import textwrap
-from classes import sh, pShow, pSize, pJpegtran, NAME
+from classes import sh, pShow, pSize, pJpegtran, pOptipng, NAME
 
 
 log = logging.getLogger()  # get root logger
@@ -13,7 +13,8 @@ logging.basicConfig(stream=sys.stdout,
 
 
 # contants
-VER = '%s: compress JPGs losslessly in batch mode and more... V0.21 ' % NAME
+VER = '%s: compress JPG & PNG losslessly in batch mode and more... V0.22'\
+       % NAME
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
 
     Usage Examples:
 
-    1), compress JPGs lossless in batch mode
+    1), compress JPG losslessly with jpegtran in batch mode
         $ python3 smally.py -p path1 path2 --jpegtran --jpg
         -p option is mandatory and must have one path argument at least.
         Only --jpg can be combined with --jpegtran.
@@ -67,6 +68,9 @@ def main():
     8), show other files
         $ python3 smally.py -p path --show -r
         Show other files in path, more info in README.md.
+
+    9), compress PNG losslessly with optipng in batch mode
+        $ python3 smally.py -p path1 path2 --optipng o2 --png
     '''),
                 epilog = 'smally project page: '
                          'https://github.com/xinlin-z/smally\n'
@@ -97,8 +101,11 @@ def main():
     actType.add_argument('--size', action='store_true',
                         help='calculate total size')
     actType.add_argument('--jpegtran', action='store_true',
-                help='lossless compress JPGs with jpegtran tool')
-    # version info
+                help='lossless compress JPGs with jpegtran')
+    actType.add_argument('--optipng',
+            choices=['o0','o1','o2','o3','o4','o5','o6','o7','o7 -zm1-9'],
+            help='lossless compress PNGs with optipng')
+    # version
     parser.add_argument('-V','--version',action='version',version=VER)
     args = parser.parse_args()  # ~ will be expanded
     # check paths
@@ -128,20 +135,25 @@ def main():
             log.info('%s: Time window must be positive.' % NAME)
             sys.exit(1)
     # actions
+    if sh.which('identify') is False: sys.exit(1)
     if args.show:
-        if sh.which('identify') is False: sys.exit(1)
         pShow(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.size:
-        if sh.which('identify') is False: sys.exit(1)
         pSize(ptype, interval, args.recursive, args.timewindow, args.paths)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
             log.info('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
-        if sh.which('identify') is False: sys.exit(1)
         pJpegtran(ptype, interval, args.recursive, args.timewindow,
                   args.paths, args.keepmtime)
+    if args.optipng:
+        if ptype != ['.png']:
+            log.info('%s: --optipng only support PNG.' % NAME)
+            sys.exit(1)
+        if sh.which('optipng') is False: sys.exit(1)
+        pOptipng(ptype, interval, args.recursive, args.timewindow,
+                  args.paths, args.keepmtime, args.optipng)
 
 
 if __name__ == '__main__':

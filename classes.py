@@ -124,9 +124,9 @@ class walk():
         it.after()
 
     def go(it, top):
-        pathdir = os.listdir(top)
-        pathdir.sort()
-        for f in pathdir:
+        #pathdir = os.listdir(top)
+        #pathdir.sort()
+        for f in sorted(os.listdir(top)):
             pathname = os.path.abspath(os.path.join(top, f))
             try:
                 mode = os.stat(pathname, follow_symlinks=False).st_mode

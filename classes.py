@@ -338,7 +338,7 @@ class pOptipng(walk):
                 fixed = '' if saved > 0 else 'fixed'
                 _log += sym + str(abs(saved)) \
                             + ' ' + sym \
-                            + str(round(abs(saved)/size_2*100,2)) \
+                            + str(round(abs(saved)/size_1*100,2)) \
                             + '%' + fixed
                 if it.kmt: mtime = it.mtimeStr(pathname)
                 os.remove(pathname)

@@ -257,7 +257,6 @@ class pJpegtran(walk):
                 os.remove(pathname)
                 os.remove(file_2)
                 os.rename(file_1, pathname)
-                if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_1
                 _log += '-' + str(saved) \
                             + ' -' + str(round(saved/size*100,2)) + '%' \
@@ -267,12 +266,15 @@ class pJpegtran(walk):
                 os.remove(pathname)
                 os.remove(file_1)
                 os.rename(file_2, pathname)
-                if it.kmt: sh.cmd('touch -m -d "'+mtime+'" '+pathname)
                 saved = size - size_2
                 _log += '-' + str(saved) \
                             + ' -' + str(round(saved/size*100,2)) +'%' \
                             + ' [p]'
                 it.saved += saved
+            # keep mtime
+            if select_file !=0 and it.kmt:
+                sh.cmd('touch -m -d "'+mtime+'" '+pathname)
+            # log and count
             log.info(_log)
             it.incr_num_do()
         except KeyboardInterrupt:

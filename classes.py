@@ -26,7 +26,7 @@ class sh():
         """execute a shell cmd,
         return returncode, stdout, stderr"""
         proc = subprocess.run(cmd, shell=True, cwd=cwd,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return proc.returncode, proc.stdout, proc.stderr
 
     @staticmethod
@@ -99,12 +99,12 @@ class walk():
 
     def check(it, pathname):
         # check time window
-        if it.tw != None:
+        if it.tw is not None:
             td = it.now - datetime.fromtimestamp(os.path.getmtime(pathname))
             if td.total_seconds() > it.tw: return False
         # check file itself
-        if (sh.identify(pathname) is False
-              or os.path.basename(pathname)[0] == '-'):
+        if (sh.identify(pathname) is False or
+                os.path.basename(pathname)[0] == '-'):
             log.warning(pathname + FILE_WRONG)
             it.num_error += 1
             return False
@@ -114,23 +114,21 @@ class walk():
         pass  # please override in subcleass if needed
 
     def statInfo(it):
-        return str(it.num_do)\
-                     +'/'+str(it.num_call)\
-                     +'/'+str(it.num_error)\
-                     +'/'+str(it.total)
+        return (str(it.num_do)
+                +'/'+str(it.num_call)
+                +'/'+str(it.num_error)
+                +'/'+str(it.total))
 
     def start(it, top):
         for path in top: it.go(path)
         it.after()
 
     def go(it, top):
-        #pathdir = os.listdir(top)
-        #pathdir.sort()
         for f in sorted(os.listdir(top)):
             pathname = os.path.abspath(os.path.join(top, f))
             try:
                 mode = os.stat(pathname, follow_symlinks=False).st_mode
-            except:
+            except FileNotFoundError:
                 continue
             if S_ISDIR(mode):
                 if it.recursive:
@@ -230,9 +228,9 @@ class pJpegtran(walk):
             rcode, _, err = sh.cmd(cmd_2)
             if rcode != 0:
                 raise ChildProcessError(
-                            '%s: error while jpegtran progressive '
-                            'compression\n' % NAME
-                            + err.decode())
+                      '%s: error while jpegtran progressive '
+                      'compression\n' % NAME
+                      + err.decode())
             # choose the smallest one
             size = os.path.getsize(pathname)
             size_1 = os.path.getsize(file_1)
@@ -262,7 +260,7 @@ class pJpegtran(walk):
                             + ' -' + str(round(saved/size*100,2)) + '%' \
                             + ' [b]'
                 it.saved += saved
-            else: #  select_file == 2:  # progressive
+            else:  # select_file == 2:  # progressive
                 os.remove(pathname)
                 os.remove(file_1)
                 os.rename(file_2, pathname)
@@ -280,12 +278,12 @@ class pJpegtran(walk):
         except KeyboardInterrupt:
             if os.path.exists(pathname):
                 try: os.remove(file_1)
-                except: pass
+                except FileNotFoundError: pass
                 try: os.remove(file_2)
-                except: pass
+                except FileNotFoundError: pass
             else:
                 if (os.path.exists(file_1) and
-                    os.path.exists(file_2)):
+                        os.path.exists(file_2)):
                     if os.path.getsize(file_1) >= os.path.getsize(file_2):
                         os.remove(file_1)
                         os.rename(file_2, pathname)
@@ -354,7 +352,7 @@ class pOptipng(walk):
                 if os.path.exists(out_file):
                     os.remove(pathname)
                     os.rename(out_file, pathname)
-            except:
+            except FileNotFoundError:
                 pass
             raise
 

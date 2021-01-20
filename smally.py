@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import sys
 import logging
@@ -13,7 +12,7 @@ logging.basicConfig(stream=sys.stdout,
 
 
 # contants
-VER = '%s: compress JPG & PNG losslessly in batch mode and more... V0.22'\
+VER = '%s: compress JPG & PNG losslessly in batch mode and more... V0.23'\
       % NAME
 
 
@@ -71,14 +70,26 @@ def main():
 
     9), compress PNG losslessly with optipng in batch mode
         $ python3 smally.py -p path1 path2 --optipng o2 --png
+
+    10), file mode
+        $ python3 smally.py -f file1 file2 --show --jpg --png
+        $ python3 smally.py -f file1 file2 --size --jpg --png
+        $ python3 smally.py -f file1 file2 --jpegtran --jpg
+        $ python3 smally.py -f file1 file2 --optipng o2 --png
+        -f: file mode
     '''),
         epilog='smally project page: '
                'https://github.com/xinlin-z/smally\n'
                'author\'s python note blog: '
                'https://www.pynote.net'
     )
-    parser.add_argument('-p', '--paths', required=True, nargs='+',
+    # group for path or file
+    pfType = parser.add_mutually_exclusive_group(required=True)
+    pfType.add_argument('-p', '--paths', nargs='+',
                         help='paths for the picture folder')
+    pfType.add_argument('-f', '--files', nargs='+',
+                        help='picture files')
+    #
     parser.add_argument('-i', type=int, metavar='INTERVAL', dest='interval',
                         help='interval time in milliseconds')
     parser.add_argument('-r', action='store_true', dest='recursive',
@@ -89,6 +100,7 @@ def main():
                         metavar='TIMEWINDOW', dest='timewindow',
                         help='apply action to files those Now - mtime is '
                              'in time window (seconds, float and positive)')
+    # picture types
     parser.add_argument('--jpg', action='store_true',
                         help='for both .jpg and .jpeg suffix')
     parser.add_argument('--png', action='store_true')
@@ -109,11 +121,20 @@ def main():
     # version
     parser.add_argument('-V','--version',action='version',version=VER)
     args = parser.parse_args()  # ~ will be expanded
-    # check paths
-    for path in args.paths:
-        if not os.path.exists(path):
-            log.info('%s: path %s is not existed.' % (NAME,path))
-            sys.exit(1)
+    # check paths or files
+    if args.paths is not None:
+        for path in args.paths:
+            if not os.path.exists(path):
+                log.info('%s: path %s is not existed.' % (NAME,path))
+                sys.exit(1)
+    else:
+        file_exts = set()
+        for sfile in args.files:
+            _, ext = os.path.splitext(sfile)
+            file_exts.add(ext.lower())
+            if not os.path.exists(sfile):
+                log.info('%s: file %s is not existed.' % (NAME,sfile))
+                sys.exit(1)
     # check picture type
     ptype = []
     if args.jpg: ptype.extend(['.jpg','.jpeg'])
@@ -123,6 +144,13 @@ def main():
     if ptype == [] and not args.show:
         log.info('%s: No picture type choosed.' % NAME)
         sys.exit(1)
+    if ptype == [] and args.show and args.files:
+        log.info('%s: No picture type choosed.' % NAME)
+        sys.exit(1)
+    if args.files:
+        if not file_exts <= set(ptype):
+            log.info('%s: input files are not in picture type choosed.'%NAME)
+            sys.exit(1)
     # interval
     interval = 0.0
     if args.interval is not None:
@@ -135,26 +163,30 @@ def main():
         if args.timewindow <= 0:
             log.info('%s: Time window must be positive.' % NAME)
             sys.exit(1)
+        if args.files:
+            log.info('%s: Time window will be ignored when -f.' % NAME)
     # actions
     if sh.which('identify') is False: sys.exit(1)
     if args.show:
-        pShow(ptype, interval, args.recursive, args.timewindow, args.paths)
+        pShow(ptype, interval, args.recursive, args.timewindow,
+              args.paths, args.files)
     if args.size:
-        pSize(ptype, interval, args.recursive, args.timewindow, args.paths)
+        pSize(ptype, interval, args.recursive, args.timewindow,
+              args.paths, args.files)
     if args.jpegtran:
         if ptype != ['.jpg','.jpeg']:
             log.info('%s: --jpegtran only support JPG.' % NAME)
             sys.exit(1)
         if sh.which('jpegtran') is False: sys.exit(1)
         pJpegtran(ptype, interval, args.recursive, args.timewindow,
-                  args.paths, args.keepmtime)
+                  args.paths, args.files, args.keepmtime)
     if args.optipng:
         if ptype != ['.png']:
             log.info('%s: --optipng only support PNG.' % NAME)
             sys.exit(1)
         if sh.which('optipng') is False: sys.exit(1)
         pOptipng(ptype, interval, args.recursive, args.timewindow,
-                 args.paths, args.keepmtime, args.optipng)
+                 args.paths, args.files, args.keepmtime, args.optipng)
 
 
 if __name__ == '__main__':

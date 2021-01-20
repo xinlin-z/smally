@@ -157,10 +157,15 @@ class walk():
 
 class pShow(walk):
     """show command"""
-    def __init__(it, ptype, interval, recursive, timewindow, path):
+    def __init__(it, ptype, interval, recursive, timewindow, paths, files):
         it.ptype = ptype
         super().__init__(ptype, interval, recursive, timewindow)
-        it.start(path)
+        if paths is not None:
+            it.start(paths)
+        else:
+            for sf in files:
+                it.do(sf)
+                time.sleep(interval)
 
     def after(it):
         if it.ptype != []:
@@ -176,10 +181,16 @@ class pShow(walk):
 
 class pSize(walk):
     """size command"""
-    def __init__(it, ptype, interval, recursive, timewindow, path):
+    def __init__(it, ptype, interval, recursive, timewindow, paths, files):
         super().__init__(ptype, interval, recursive, timewindow)
         it.size = 0
-        it.start(path)
+        if paths is not None:
+            it.start(paths)
+        else:
+            for sf in files:
+                it.do(sf)
+                time.sleep(interval)
+            it.after()
 
     def after(it):
         log.info('%s: total size: '%NAME
@@ -196,24 +207,38 @@ class pSize(walk):
 
 class pJpegtran(walk):
     """jpegtran command"""
-    def __init__(it, ptype, interval, recursive, timewindow, path, keepmtime):
+    def __init__(it, ptype, interval, recursive, timewindow,
+                 paths, files, keepmtime):
         super().__init__(ptype, interval, recursive, timewindow)
         it.saved = 0
         it.kmt = keepmtime
-        it.start(path)
+        if paths is not None:
+            it.start(paths)
+        else:
+            for sf in files:
+                it.do(sf)
+                time.sleep(interval)
+            it.after(files_mode=True)
 
-    def after(it):
-        log.info('%s: total saved: '%NAME
-                 + str(it.saved) + ', '
-                 + str(round(it.saved/1024,2)) + 'K, '
-                 + str(round(it.saved/1024/1024,3)) + 'M, '
-                 + str(round(it.saved/1024/1024/1024,4)) + 'G, '
-                 + it.statInfo())
+    def after(it, files_mode=False):
+        if files_mode:
+            log.info('%s: total saved: '%NAME
+                     + str(it.saved) + ', '
+                     + str(round(it.saved/1024,2)) + 'K, '
+                     + str(round(it.saved/1024/1024,3)) + 'M, '
+                     + str(round(it.saved/1024/1024/1024,4)) + 'G')
+        else:
+            log.info('%s: total saved: '%NAME
+                     + str(it.saved) + ', '
+                     + str(round(it.saved/1024,2)) + 'K, '
+                     + str(round(it.saved/1024/1024,3)) + 'M, '
+                     + str(round(it.saved/1024/1024/1024,4)) + 'G, '
+                     + it.statInfo())
 
     def do(it, pathname):
         try:
             basename = os.path.basename(pathname)
-            wd = os.path.dirname(pathname)
+            wd = os.path.dirname(os.path.abspath(pathname))
             # baseline
             file_1 = wd + '/'+ '__smally_jpg1_' + basename
             cmd_1 = 'jpegtran -copy none -optimize %s > %s'%(pathname,file_1)
@@ -300,25 +325,38 @@ class pJpegtran(walk):
 class pOptipng(walk):
     """optipng command"""
     def __init__(it, ptype, interval, recursive, timewindow,
-                 path, keepmtime, level):
+                 paths, files, keepmtime, level):
         super().__init__(ptype, interval, recursive, timewindow)
         it.saved = 0
         it.kmt = keepmtime
         it.level = level
-        it.start(path)
+        if paths is not None:
+            it.start(paths)
+        else:
+            for sf in files:
+                it.do(sf)
+                time.sleep(interval)
+            it.after(files_mode=True)
 
-    def after(it):
-        log.info('%s: total saved: '%NAME
-                 + str(it.saved) + ', '
-                 + str(round(it.saved/1024,2)) + 'K, '
-                 + str(round(it.saved/1024/1024,3)) + 'M, '
-                 + str(round(it.saved/1024/1024/1024,4)) + 'G, '
-                 + it.statInfo())
+    def after(it, files_mode=False):
+        if files_mode:
+            log.info('%s: total saved: '%NAME
+                     + str(it.saved) + ', '
+                     + str(round(it.saved/1024,2)) + 'K, '
+                     + str(round(it.saved/1024/1024,3)) + 'M, '
+                     + str(round(it.saved/1024/1024/1024,4)) + 'G')
+        else:
+            log.info('%s: total saved: '%NAME
+                     + str(it.saved) + ', '
+                     + str(round(it.saved/1024,2)) + 'K, '
+                     + str(round(it.saved/1024/1024,3)) + 'M, '
+                     + str(round(it.saved/1024/1024/1024,4)) + 'G, '
+                     + it.statInfo())
 
     def do(it, pathname):
         try:
             basename = os.path.basename(pathname)
-            wd = os.path.dirname(pathname)
+            wd = os.path.dirname(os.path.abspath(pathname))
             out_file = wd + '/' + basename + '.smally.out'
             cmd = 'optipng -fix -%s %s -out %s'%(it.level,pathname,out_file)
             rcode, _, err = sh.cmd(cmd)

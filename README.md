@@ -1,3 +1,19 @@
+# Contents
+
+* [smally](#smally)
+    * [JPG Lossless Compression Algorithm](#JPG-Lossless-Compression-Algorithm)
+    * [PNG Lossless Compression](#PNG-Lossless-Compression)
+* [How to Install](#How-to-Install)
+* [How to Use](#How-to-Use)
+    * [Compress JPGs Losslessly in Batch Mode](#Compress-JPGs-Losslessly-in-Batch-Mode)
+    * [Get Help](#Get-Help)
+    * [Show Pictures' Info](#Show-Pictures-Info)
+    * [Show Other Files](#Show-Other-Files)
+    * [Calculate Pictures' Total Size](#Calculate-Pictures-Total-Size)
+    * [Compress PNG Losslessly in Batch Mode](#Compress-PNG-Losslessly-in-Batch-Mode)
+    * [File Mode](#File-Mode)
+* [Version](#Version)
+
 # smally
 
 Compress JPG & PNG losslessly in batch mode and more...
@@ -225,7 +241,20 @@ The -fix option is joined in the optipng command line, so it is possible
 that you find the size is a little bigger after compression. This is the
 cost for fixing broken png files.
 
+## File Mode
+
+To use -f option, you can specify files in cmd line:
+
+    $ python3 smally.py -f file1 file2 --show --jpg --png
+    $ python3 smally.py -f file1 file2 --size --jpg --png
+    $ python3 smally.py -f file1 file2 --jpegtran --jpg
+    $ python3 smally.py -f file1 file2 --optipng o2 --png
+
 # Version
+
+* **2021-01-24 V0.23**
+    - add -f option, file mode
+    - bugfix
 
 * **2020-10-30 V0.22**
     - add --optipng to compress PNGs

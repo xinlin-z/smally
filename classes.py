@@ -143,14 +143,15 @@ class walk():
                 # get file extension
                 _, file_ext = os.path.splitext(pathname)
                 # call accordingly
-                if file_ext in it.ptype:
+                if file_ext.lower() in it.ptype:
                     if it.check(pathname) is False:
                         continue
                     it.do(pathname)
                     it.num_call += 1
                     time.sleep(it.interval)
                 else:
-                    if file_ext not in ('.jpg','.jpeg','.png','.gif','.webp'):
+                    if file_ext.lower() not in ('.jpg','.jpeg',
+                                                '.png','.gif','.webp'):
                         log.warning(pathname + FILE_NOTPIC)
 
 

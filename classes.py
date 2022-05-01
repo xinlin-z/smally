@@ -301,6 +301,8 @@ class pJpegtran(walk):
             # log and count
             log.info(_log)
             it.incr_num_do()
+        except Exception as e:
+            log.info(repr(e))
         except KeyboardInterrupt:
             if os.path.exists(pathname):
                 try: os.remove(file_1)
@@ -386,6 +388,8 @@ class pOptipng(walk):
                     sh.cmd('touch -m -d "'+mtime+'" '+pathname)
             log.info(_log)
             it.incr_num_do()
+        except Exception as e:
+            log.info(repr(e))
         except KeyboardInterrupt:
             try:
                 if os.path.exists(out_file):

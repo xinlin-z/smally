@@ -139,12 +139,50 @@ def optipng(pathname):
         raise
 
 
+def gifsicle(pathname):
+    try:
+        basename = os.path.basename(pathname)
+        wd = os.path.dirname(os.path.abspath(pathname))
+        out_file = wd + '/' + basename + '.smally.out'
+        cmd = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
+        shcmd(cmd)
+        _log = pathname + ' '
+        size_1 = os.path.getsize(pathname)
+        size_2 = os.path.getsize(out_file)
+        if size_1 <= size_2:
+            _log += '--'
+            os.remove(out_file)
+        else:
+            saved = size_1 - size_2
+            sym = '-' if saved > 0 else '+'
+            _log += sym + str(abs(saved)) \
+                        + ' ' + sym \
+                        + str(round(abs(saved)/size_1*100,2))\
+                        + '%'
+            _, mtime, _ = shcmd('stat -c "%y" ' + pathname)
+            os.remove(pathname)
+            os.rename(out_file, pathname)
+            shcmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+        print(_log)
+    except BaseException:
+        try:
+            if os.path.exists(pathname):
+                os.remove(out_file)
+            elif os.path.exists(out_file):
+                os.rename(out_file, pathname)
+        except FileNotFoundError:
+            pass
+        raise
+
+
 # python3 smally.py --jpegtran|--optipng <filename>
 if __name__ == '__main__':
     if sys.argv[1] == '--jpegtran':
         jpegtran(sys.argv[2])
     elif sys.argv[1] == '--optipng':
         optipng(sys.argv[2])
+    elif sys.argv[1] == '--gifsicle':
+        gifsicle(sys.argv[2])
     elif sys.argv[1] == '-V':
         print('smally V0.50 by xinlin-z (https://github.com/xinlin-z/smally)')
     else:

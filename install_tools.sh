@@ -34,5 +34,5 @@ echo "installing $GIF"
 install_tool $GIF gifsicle
 
 
-echo 'Done! ^____^'
+echo 'All Done! ^____^'
 

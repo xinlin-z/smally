@@ -11,20 +11,23 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo 'Both wget and curl are not available, fail and exit...'
         exit 1
-    else dtool=curl
+    else
+        dtool=curl
+        opt='-o'
     fi
-else dtool=wget
+else
+    dtool=wget
+    opt='-O'
 fi
 echo 'Download Tool:' $dtool
 
 
+set -e
 # download <url> <filename>
 function download() {
-    local opt
     [ -f $2 ] &&
     echo "$2 is already existed..." ||
     {
-        if [ ${dtool} == 'wget' ]; then opt='-O'; else opt='-o'; fi
         $dtool $1 $opt $2
         if [ $? -ne 0 ]; then
             echo "Download $2 failed, exit..."

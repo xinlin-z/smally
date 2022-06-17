@@ -1,6 +1,7 @@
 * [Smally](#Smally)
     * [JPEG Compression](#JPEG-Compression)
     * [PNG Compression](#PNG-Compression)
+    * [GIF Compression](#GIF-Compression)
     * [Install](#Install)
     * [Run Test](#Run-Test)
     * [Usage](#Usage)
@@ -9,10 +10,10 @@
 
 # Smally
 
-A simple tool to compress all JPEG and PNG files losslessly in a folder, by
-invoking the famous jpegtran and optipng.
+A simple tool to compress all JPEG, PNG and GIF files losslessly in a folder,
+by invoking the famous `jpegtran`, `optipng` and `gifsicle`.
 
-Smally uses `file` to determine if it is a JPEG or PNG, and it would keep
+Smally uses `file` command to determine file type, and it would keep
 the file name and mtime unchnaged after compression!
 
 ## JPEG Compression
@@ -24,7 +25,11 @@ files, choose the smallest one in size.
 
 ## PNG Compression
 
-Simply calling optipng to compress PNG, in the most crazy level.
+Simply calling optipng to compress PNG, in the most crazy `-o7 -zm1-9` level.
+
+## GIF Compression
+
+Simple calling gifsicle to compress GIF, by using `-O3 --color 256`.
 
 ## Install
 
@@ -34,8 +39,14 @@ $ cd smally
 $ sudo bash install_tools.sh
 ```
 
-This will setup the latest version jpegtran and optipng in /usr/bin
-automatically.
+This will setup the latest version of jpegtran, optipng and gifsicle at
+/usr/bin automatically.
+
+For the success of installation, you might need:
+
+``` shell
+$ sudo dnf install gcc make autoconf automake
+```
 
 ##  Run Test
 
@@ -56,9 +67,10 @@ For single file:
 ``` shell
 $ python3 smally.py --jpegtran <jpeg_file>
 $ python3 smally.py --optipng <png_file>
+$ python3 smally.py --gifsicle <gif_file>
 ```
 
-For single file which you don't know format:
+For single file which you don't know the format:
 
 ``` shell
 $ bash smally.sh <filename>

@@ -4,18 +4,20 @@ import os
 import subprocess
 
 
-def shcmd(cmd, cwd=None):
+def shcmd(cmd, shell=False):
     """execute a cmd without shell,
     return returncode, stdout, stderr"""
-    proc = subprocess.run(cmd.split(), shell=False, cwd=cwd,
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.run(cmd if shell else cmd.split(),
+                          shell=shell,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def isProgressive(pathname):
+def is_progressive(pathname):
     """check if pathname is progressive jpg format"""
     cmd = 'file %s | grep progressive' % pathname
-    code, _, _ = shcmd(cmd)
+    code, _, _ = shcmd(cmd, shell=True)
     if code == 0:
         return True
     return False
@@ -26,22 +28,24 @@ def jpegtran(pathname):
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         # baseline
-        file_1 = wd + '/'+ '__smally_jpg1_' + basename
+        file_1 = wd + '/'+ basename + '.smally.jpg.baseline'
         cmd_1 = 'jpegtran -copy none -optimize -outfile %s %s'\
                                                         % (file_1, pathname)
         shcmd(cmd_1)
         # progressive
-        file_2 = wd + '/' + '__smally_jpg2_' + basename
+        file_2 = wd + '/' + basename + 'smally.jpg.progressive'
         cmd_2 = 'jpegtran -copy none -progressive -optimize -outfile %s %s'\
                                                         % (file_2, pathname)
         shcmd(cmd_2)
+        # get jpg type
+        progressive = is_progressive(pathname)
         # choose the smallest one
         size = os.path.getsize(pathname)
         size_1 = os.path.getsize(file_1)
         size_2 = os.path.getsize(file_2)
         if size <= size_1 and size <= size_2:
             select_file = 0
-            if size == size_2 and isProgressive(pathname) is False:
+            if size == size_2 and progressive is False:
                 select_file = 2  # progressive is preferred
         else:
             if size_2 <= size_1: select_file = 2
@@ -53,7 +57,7 @@ def jpegtran(pathname):
         if select_file == 0:  # origin
             os.remove(file_1)
             os.remove(file_2)
-            if isProgressive(pathname) is True:
+            if progressive is True:
                 _log += '-- [p]'
             else:
                 _log += '-- [b]'
@@ -106,7 +110,7 @@ def optipng(pathname):
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
-        out_file = wd + '/' + basename + '.smally.out'
+        out_file = wd + '/' + basename + '.smally.png'
         cmd = 'optipng -fix -%s %s -out %s'%('-o7 -zm1-9',pathname,out_file)
         shcmd(cmd)
         _log = pathname + ' '
@@ -143,7 +147,7 @@ def gifsicle(pathname):
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
-        out_file = wd + '/' + basename + '.smally.out'
+        out_file = wd + '/' + basename + '.smally.gif'
         cmd = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
         shcmd(cmd)
         _log = pathname + ' '

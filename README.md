@@ -2,7 +2,10 @@
     * [JPEG Compression](#JPEG-Compression)
     * [PNG Compression](#PNG-Compression)
     * [GIF Compression](#GIF-Compression)
-    * [Install](#Install)
+    * [Install Tools](#Install-Tools)
+        * [Fedora](#Fedora)
+        * [Ubuntu](#Ubuntu)
+        * [Compile Install](#Compile-Install)
     * [Run Test](#Run-Test)
     * [Usage](#Usage)
     * [Screenshot](#Screenshot)
@@ -31,11 +34,25 @@ Simply calling optipng to compress PNG, in the most crazy `-o7 -zm1-9` level.
 
 Simple calling gifsicle to compress GIF, by using `-O3 --color 256`.
 
-## Install
+## Install Tools
+
+Smally needs jpegtran, optipng and gifsicle to do it's job.
+
+### Fedora
 
 ``` shell
-$ git clone https://github.com/xinlin-z/smally
-$ cd smally
+$ sudo dnf install libjpeg-turbo-utils optipng gifsicle
+```
+
+### Ubuntu
+
+``` shell
+sudo apt install libjpeg-turbo-progs optipng gifsicle
+```
+
+### Compile Install
+
+``` shell
 $ sudo bash install_tools.sh
 ```
 

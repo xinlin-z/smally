@@ -1,16 +1,22 @@
 #!/usr/bin/bash
-set -u
 cd $(dirname $0)
 . common.sh
 
 
-# download tool
+# check $1
+if [ -z $1 ]; then
+    echo 'error: no parameter (JPEG, PNG or GIF)'
+    exit 1
+fi
+
+
+# check and set download tool
 which wget > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     which curl > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo 'Both wget and curl are not available, fail and exit...'
-        exit 1
+        echo 'error: no download tool (wget or curl)'
+        exit 2
     else
         dtool=curl
         opt='-o'
@@ -31,19 +37,34 @@ function download() {
         $dtool $1 $opt $2
         if [ $? -ne 0 ]; then
             echo "Download $2 failed, exit..."
-            exit 2
+            exit 3
         fi
     }
 }
 
 
-echo "downloading $JPEG"
-download $JPEG_URL $JPEG
-echo "downloading $OPTIPNG"
-download $OPTIPNG_URL $OPTIPNG
-echo "downloading $GIF"
-download $GIF_URL $GIF
-
+# download
+while [ $1 ]; do
+    case $1 in
+        JPEG)
+            echo "downloading $JPEG"
+            download $JPEG_URL $JPEG
+            ;;
+        PNG)
+            echo "downloading $OPTIPNG"
+            download $OPTIPNG_URL $OPTIPNG
+            ;;
+        GIF)
+            echo "downloading $GIF"
+            download $GIF_URL $GIF
+            ;;
+        *)
+            echo 'error: parameter value should be in (JPEG, PNG or GIF)'
+            exit 4
+            ;;
+    esac
+    shift
+done
 
 echo 'Done!'
 

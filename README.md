@@ -81,7 +81,14 @@ $ bash test.sh
 Normally:
 
 ``` shell
+$ # for all jpeg, png and gif
 $ find <path/to/image_folder> -type f -exec bash smally.sh {} \;
+$ # only jpeg
+$ find <path/to/image_folder> -type f -exec bash smally.sh -t JPEG {} \;
+$ # only png
+$ find <path/to/image_folder> -type f -exec bash smally.sh -t PNG {} \;
+$ # only gif
+$ find <path/to/image_folder> -type f -exec bash smally.sh -t GIF {} \;
 ```
 
 For single file:

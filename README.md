@@ -91,6 +91,13 @@ $ # only gif
 $ find <path/to/image_folder> -type f -exec bash smally.sh -t GIF {} \;
 ```
 
+Or to use `xargs' -P parameter` to take advantage of multi-core CPU:
+
+``` shell
+$ # -P4 means 4 paralleled processes
+$ find <pathname> -type f -print0 | xargs -0 -P4 -I{} bash smally.sh {}
+```
+
 For single file:
 
 ``` shell

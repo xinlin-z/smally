@@ -10,6 +10,7 @@
     * [Usage](#Usage)
     * [Screenshot](#Screenshot)
     * [Old Version](#Old-Version)
+    * [Contributors](#Contributors)
 
 # Smally
 
@@ -118,6 +119,9 @@ $ bash smally.sh <filename>
 
 ## Old Version
 
-This version (from V0.50) of smally is a total refactor one, old versions
+This version (from V0.51) of smally is a total refactor one, old versions
 are too complicated, which I do not recommend!
 
+## Contributors
+* [@xinlin-z](https://github.com/xinlin-z) - author and primary contributor
+* [@serzhenko](https://github.com/serzhenko) - cross-platform fixes to Python script

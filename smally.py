@@ -195,7 +195,6 @@ if __name__ == '__main__':
     elif sys.argv[1] == '--gifsicle':
         gifsicle(sys.argv[2])
     elif sys.argv[1] == '-V':
-        print('smally V0.50 by xinlin-z (https://github.com/xinlin-z/smally)')
-        print('os independence fixes by serzhenko (https://github.com/serzhenko/smally)')
+        print('smally V0.51 by xinlin-z (https://github.com/xinlin-z/smally)')
     else:
         print('Command line error.')

@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
+"""
+Compress jpeg, png and gif losslessly by jpegtran, optipng and gifsicle.
+
+Author:   xinlin-z
+Github:   https://github.com/xinlin-z/smally
+Blog:     https://cs.pynote.net
+License:  MIT
+"""
 import sys
 import os
 import subprocess
 
 
-def shcmd(cmd, shell=False):
+def cmd(cmd, shell=False):
     """execute a cmd without shell,
     return returncode, stdout, stderr"""
     proc = subprocess.run(cmd if shell else cmd.split(),
@@ -16,8 +24,8 @@ def shcmd(cmd, shell=False):
 
 def is_progressive(pathname):
     """check if pathname is progressive jpg format"""
-    cmd = 'file %s | grep progressive' % pathname
-    code, _, _ = shcmd(cmd, shell=True)
+    cmdstr = 'file %s | grep progressive' % pathname
+    code, _, _ = cmd(cmdstr, shell=True)
     if code == 0:
         return True
     return False
@@ -31,12 +39,12 @@ def jpegtran(pathname):
         file_1 = wd + '/'+ basename + '.smally.jpg.baseline'
         cmd_1 = 'jpegtran -copy none -optimize -outfile %s %s'\
                                                         % (file_1, pathname)
-        shcmd(cmd_1)
+        cmd(cmd_1)
         # progressive
         file_2 = wd + '/' + basename + 'smally.jpg.progressive'
         cmd_2 = 'jpegtran -copy none -progressive -optimize -outfile %s %s'\
                                                         % (file_2, pathname)
-        shcmd(cmd_2)
+        cmd(cmd_2)
         # get jpg type
         progressive = is_progressive(pathname)
         # choose the smallest one
@@ -51,7 +59,7 @@ def jpegtran(pathname):
             if size_2 <= size_1: select_file = 2
             else: select_file = 1
         # get mtime
-        _, mtime, _ = shcmd('stat -c "%y" ' + pathname)
+        _, mtime, _ = cmd('stat -c "%y" ' + pathname)
         # rm & mv
         _log = pathname + ' '
         if select_file == 0:  # origin
@@ -79,7 +87,7 @@ def jpegtran(pathname):
                         + ' [p]'
         # keep mtime
         if select_file != 0:
-            shcmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
         # log and count
         print(_log)
     except BaseException:
@@ -111,8 +119,8 @@ def optipng(pathname):
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         out_file = wd + '/' + basename + '.smally.png'
-        cmd = 'optipng -fix -%s %s -out %s'%('-o7 -zm1-9',pathname,out_file)
-        shcmd(cmd)
+        cmdstr = 'optipng -fix -%s %s -out %s'%('-o7 -zm1-9',pathname,out_file)
+        cmd(cmdstr)
         _log = pathname + ' '
         size_1 = os.path.getsize(pathname)
         size_2 = os.path.getsize(out_file)
@@ -127,10 +135,10 @@ def optipng(pathname):
                         + ' ' + sym \
                         + str(round(abs(saved)/size_1*100,2)) \
                         + '%' + fixed
-            _, mtime, _ = shcmd('stat -c "%y" ' + pathname)
+            _, mtime, _ = cmd('stat -c "%y" ' + pathname)
             os.remove(pathname)
             os.rename(out_file, pathname)
-            shcmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
         print(_log)
     except BaseException:
         try:
@@ -148,8 +156,8 @@ def gifsicle(pathname):
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         out_file = wd + '/' + basename + '.smally.gif'
-        cmd = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
-        shcmd(cmd)
+        cmdstr = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
+        cmd(cmdstr)
         _log = pathname + ' '
         size_1 = os.path.getsize(pathname)
         size_2 = os.path.getsize(out_file)
@@ -163,10 +171,10 @@ def gifsicle(pathname):
                         + ' ' + sym \
                         + str(round(abs(saved)/size_1*100,2))\
                         + '%'
-            _, mtime, _ = shcmd('stat -c "%y" ' + pathname)
+            _, mtime, _ = cmd('stat -c "%y" ' + pathname)
             os.remove(pathname)
             os.rename(out_file, pathname)
-            shcmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
         print(_log)
     except BaseException:
         try:
@@ -188,7 +196,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == '--gifsicle':
         gifsicle(sys.argv[2])
     elif sys.argv[1] == '-V':
-        print('smally V0.50 by xinlin-z (https://github.com/xinlin-z/smally)')
+        print('smally V0.51 by xinlin-z (https://github.com/xinlin-z/smally)')
     else:
         print('Command line error.')
 

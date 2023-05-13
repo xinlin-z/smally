@@ -2,6 +2,7 @@
 format = %(path)s: %(row)d,%(col)d: %(code)s: %(text)s
 exclude =
     .git,
+    .mypy_cache,
     __pycache__,
     README.md,
     LICENSE

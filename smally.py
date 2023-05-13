@@ -12,8 +12,8 @@ import os
 import subprocess
 
 
-def cmd(cmd, shell=False):
-    """execute a cmd without shell,
+def cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
+    """execute a cmd w/o shell,
     return returncode, stdout, stderr"""
     proc = subprocess.run(cmd if shell else cmd.split(),
                           shell=shell,
@@ -22,7 +22,7 @@ def cmd(cmd, shell=False):
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def is_progressive(pathname):
+def is_progressive(pathname: str) -> bool:
     """check if pathname is progressive jpg format"""
     cmdstr = 'file %s | grep progressive' % pathname
     code, _, _ = cmd(cmdstr, shell=True)
@@ -31,7 +31,7 @@ def is_progressive(pathname):
     return False
 
 
-def jpegtran(pathname):
+def jpegtran(pathname: str) -> None:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -114,7 +114,7 @@ def jpegtran(pathname):
         raise
 
 
-def optipng(pathname):
+def optipng(pathname: str) -> None:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -151,7 +151,7 @@ def optipng(pathname):
         raise
 
 
-def gifsicle(pathname):
+def gifsicle(pathname: str) -> None:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -187,7 +187,7 @@ def gifsicle(pathname):
         raise
 
 
-# python3 smally.py --jpegtran|--optipng <filename>
+# python3 smally.py --jpegtran|--optipng|--gifsicle <filename>
 if __name__ == '__main__':
     if sys.argv[1] == '--jpegtran':
         jpegtran(sys.argv[2])

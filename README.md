@@ -5,7 +5,6 @@
     * [Install Tools](#Install-Tools)
         * [Fedora](#Fedora)
         * [Ubuntu](#Ubuntu)
-        * [Compile Install](#Compile-Install)
     * [Run Test](#Run-Test)
     * [Usage](#Usage)
     * [Screenshot](#Screenshot)
@@ -48,26 +47,6 @@ $ sudo dnf install libjpeg-turbo-utils optipng gifsicle
 
 ``` shell
 sudo apt install libjpeg-turbo-progs optipng gifsicle
-```
-
-### Compile Install
-
-``` shell
-$ sudo bash _install_tools.sh JPEG
-$ sudo bash _install_tools.sh PNG
-$ sudo bash _install_tools.sh GIF
-$ # or all in one command
-$ sudo bash _install_tools.sh JPEG PNG GIF
-```
-
-This will compile and install the latest version of jpegtran,
-optipng and gifsicle at /usr/bin automatically.
-**Be careful, the originals will be removed.**
-
-For the success of installation, you might also need:
-
-``` shell
-$ sudo dnf install gcc make autoconf automake
 ```
 
 ##  Run Test

@@ -35,7 +35,7 @@ Simple calling gifsicle to compress GIF, by using `-O3 --color 256`.
 
 ## Install Tools
 
-Smally needs jpegtran, optipng and gifsicle to do it's job.
+Smally needs `jpegtran`, `optipng` and `gifsicle` to do it's job.
 
 ### Fedora
 
@@ -54,6 +54,9 @@ sudo apt install libjpeg-turbo-progs optipng gifsicle
 ``` shell
 $ bash test.sh
 ```
+
+This test.sh script will check all needed tools, and run smally on
+pictures in testpic.
 
 ##  Usage
 

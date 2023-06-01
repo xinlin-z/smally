@@ -1,5 +1,21 @@
-# need to run in smally repos folder
+#!/usr/bin/bash
 set -u
+cd $(dirname $0)
+
+
+function check_tool(){
+    which $1 > /dev/null
+    if [ $? -ne 0 ]; then
+        echo $1 not found
+        exit 1
+    fi
+    echo found $1
+}
+
+
+check_tool jpegtran
+check_tool optipng
+check_tool gifsicle
 
 
 echo '# Test smally.py'
@@ -53,5 +69,5 @@ find _ttpic -type f -exec bash smally.sh -t GIF {} \;
 rm -rf _ttpic
 
 
-echo 'Test Done!'
+echo 'Test OK!'
 

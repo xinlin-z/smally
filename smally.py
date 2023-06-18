@@ -31,6 +31,8 @@ def is_jpeg_progressive(pathname: str) -> bool:
 
 
 def jpegtran(pathname: str) -> tuple[int,int]:
+    """ use jpegtran to compress pathname,
+        return tuple (saved, orginal_size). """
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -103,6 +105,8 @@ def jpegtran(pathname: str) -> tuple[int,int]:
 
 
 def optipng(pathname: str) -> tuple[int,int]:
+    """ use optipng to compress pathname,
+        return tuple (saved, orginal_size). """
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -133,6 +137,8 @@ def optipng(pathname: str) -> tuple[int,int]:
 
 
 def gifsicle(pathname: str) -> tuple[int,int]:
+    """ use gifsicle to compress pathname,
+        return tuple (saved, orginal_size). """
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))

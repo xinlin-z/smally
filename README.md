@@ -7,6 +7,7 @@
         * [Ubuntu](#Ubuntu)
     * [Run Test](#Run-Test)
     * [Usage](#Usage)
+    * [API](#API)
     * [Screenshot](#Screenshot)
     * [Old Version](#Old-Version)
 
@@ -49,7 +50,7 @@ $ sudo dnf install libjpeg-turbo-utils optipng gifsicle
 sudo apt install libjpeg-turbo-progs optipng gifsicle
 ```
 
-##  Run Test
+## Run Test
 
 ``` shell
 $ bash test.sh
@@ -58,7 +59,7 @@ $ bash test.sh
 This test.sh script will check all needed tools, and run smally on
 pictures in testpic.
 
-##  Usage
+## Usage
 
 Normally:
 
@@ -93,6 +94,21 @@ For single file which you don't know the format:
 ``` shell
 $ bash smally.sh <filename>
 ```
+
+## API
+
+There are 4 interfaces provided by smally:
+
+```python
+from smally import (jpegtran,
+                    optipng,
+                    gifsicle,
+                    is_jpeg_progressive)
+```
+
+The first 3 interfaces take a pathname as parameter, and return a tuple
+with saved size and the original size. The last one interface also takes
+a pathname as parameter, and simply return true or false.
 
 ## Screenshot
 

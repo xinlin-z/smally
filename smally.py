@@ -10,6 +10,7 @@ License:  MIT
 import sys
 import os
 import subprocess
+import argparse
 
 
 def cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
@@ -22,13 +23,11 @@ def cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def is_progressive(pathname: str) -> bool:
+def is_jpeg_progressive(pathname: str) -> bool:
     """check if pathname is progressive jpg format"""
     cmdstr = 'file %s | grep progressive' % pathname
     code, _, _ = cmd(cmdstr, shell=True)
-    if code == 0:
-        return True
-    return False
+    return True if code==0 else False
 
 
 def jpegtran(pathname: str) -> None:
@@ -46,7 +45,7 @@ def jpegtran(pathname: str) -> None:
                                                         % (file_2, pathname)
         cmd(cmd_2)
         # get jpg type
-        progressive = is_progressive(pathname)
+        progressive = is_jpeg_progressive(pathname)
         # choose the smallest one
         size = os.path.getsize(pathname)
         size_1 = os.path.getsize(file_1)
@@ -187,16 +186,38 @@ def gifsicle(pathname: str) -> None:
         raise
 
 
-# python3 smally.py --jpegtran|--optipng|--gifsicle <filename>
+def _show(file_type: str,
+          pathname: str,
+          saved: tuple[int,float]) -> None:
+    _log =(pathname
+           + ' '
+           + '--' if saved[0]==0 else str(saved[0])+' '+str(round(saved[1],2))
+           + ' '
+           + '' if file_type!='j' else
+                        '[p]' if is_jpeg_progressive(pathname) else '[b]')
+    print(_log)
+
+
+_VER = 'smally V0.52 by xinlin-z (https://github.com/xinlin-z/smally)'
+
+
 if __name__ == '__main__':
-    if sys.argv[1] == '--jpegtran':
-        jpegtran(sys.argv[2])
-    elif sys.argv[1] == '--optipng':
-        optipng(sys.argv[2])
-    elif sys.argv[1] == '--gifsicle':
-        gifsicle(sys.argv[2])
-    elif sys.argv[1] == '-V':
-        print('smally V0.51 by xinlin-z (https://github.com/xinlin-z/smally)')
-    else:
-        print('Command line error.')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-V', '--version', action='version', version=_VER)
+    file_type = parser.add_mutually_exclusive_group(required=True)
+    file_type.add_argument('-j', '--jpegtran', action='store_true',
+                           help='use jpegtran to compress jpeg file')
+    file_type.add_argument('-p', '--optipng', action='store_true',
+                           help='use optipng to compress png file')
+    file_type.add_argument('-g', '--gifsicle', action='store_true',
+                           help='use gifsicle to compress gif file')
+    parser.add_argument('pathname', help='specify the pathname')
+    args = parser.parse_args()
+
+    if args.jpegtran:
+        jpegtran(args.pathname)
+    elif args.optipng:
+        optipng(args.pathname)
+    elif args.gifsicle:
+        gifsicle(args.pathname)
 

@@ -13,7 +13,7 @@ import subprocess
 import argparse
 
 
-def cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
+def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
     """execute a cmd w/o shell,
     return returncode, stdout, stderr"""
     proc = subprocess.run(cmd if shell else cmd.split(),
@@ -26,11 +26,11 @@ def cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
 def is_jpeg_progressive(pathname: str) -> bool:
     """check if pathname is progressive jpg format"""
     cmdstr = 'file %s | grep progressive' % pathname
-    code, _, _ = cmd(cmdstr, shell=True)
+    code, _, _ = _cmd(cmdstr, shell=True)
     return True if code==0 else False
 
 
-def jpegtran(pathname: str) -> None:
+def jpegtran(pathname: str) -> tuple[int,int]:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
@@ -38,12 +38,12 @@ def jpegtran(pathname: str) -> None:
         file_1 = wd + '/'+ basename + '.smally.jpg.baseline'
         cmd_1 = 'jpegtran -copy none -optimize -outfile %s %s'\
                                                         % (file_1, pathname)
-        cmd(cmd_1)
+        _cmd(cmd_1)
         # progressive
         file_2 = wd + '/' + basename + 'smally.jpg.progressive'
         cmd_2 = 'jpegtran -copy none -progressive -optimize -outfile %s %s'\
                                                         % (file_2, pathname)
-        cmd(cmd_2)
+        _cmd(cmd_2)
         # get jpg type
         progressive = is_jpeg_progressive(pathname)
         # choose the smallest one
@@ -58,37 +58,26 @@ def jpegtran(pathname: str) -> None:
             if size_2 <= size_1: select_file = 2
             else: select_file = 1
         # get mtime
-        _, mtime, _ = cmd('stat -c "%y" ' + pathname)
+        _, mtime, _ = _cmd('stat -c "%y" ' + pathname)
         # rm & mv
-        _log = pathname + ' '
         if select_file == 0:  # origin
             os.remove(file_1)
             os.remove(file_2)
-            if progressive is True:
-                _log += '-- [p]'
-            else:
-                _log += '-- [b]'
+            saved = 0
         elif select_file == 1:  # baseline
             os.remove(pathname)
             os.remove(file_2)
             os.rename(file_1, pathname)
-            saved = size - size_1
-            _log += '-' + str(saved) \
-                        + ' -' + str(round(saved/size*100,2)) + '%' \
-                        + ' [b]'
+            saved = size_1 - size
         else:  # select_file == 2:  # progressive
             os.remove(pathname)
             os.remove(file_1)
             os.rename(file_2, pathname)
-            saved = size - size_2
-            _log += '-' + str(saved) \
-                        + ' -' + str(round(saved/size*100,2)) +'%' \
-                        + ' [p]'
+            saved = size_2 - size
         # keep mtime
         if select_file != 0:
-            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
-        # log and count
-        print(_log)
+            _cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+        return saved, size
     except BaseException:
         try:
             if os.path.exists(pathname):
@@ -113,32 +102,25 @@ def jpegtran(pathname: str) -> None:
         raise
 
 
-def optipng(pathname: str) -> None:
+def optipng(pathname: str) -> tuple[int,int]:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         out_file = wd + '/' + basename + '.smally.png'
-        cmdstr = 'optipng -fix -%s %s -out %s'%('-o7 -zm1-9',pathname,out_file)
-        cmd(cmdstr)
-        _log = pathname + ' '
+        cmds = 'optipng -fix -%s %s -out %s'%('-o7 -zm1-9',pathname,out_file)
+        _cmd(cmds)
         size_1 = os.path.getsize(pathname)
         size_2 = os.path.getsize(out_file)
         if size_1 == size_2:
-            _log += '--'
             os.remove(out_file)
+            saved = 0
         else:
-            saved = size_1 - size_2
-            sym = '-' if saved > 0 else '+'
-            fixed = '' if saved > 0 else 'fixed'
-            _log += sym + str(abs(saved)) \
-                        + ' ' + sym \
-                        + str(round(abs(saved)/size_1*100,2)) \
-                        + '%' + fixed
-            _, mtime, _ = cmd('stat -c "%y" ' + pathname)
+            saved = size_2 - size_1
+            _, mtime, _ = _cmd('stat -c "%y" ' + pathname)
             os.remove(pathname)
             os.rename(out_file, pathname)
-            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
-        print(_log)
+            _cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+        return saved, size_1
     except BaseException:
         try:
             if os.path.exists(pathname):
@@ -150,31 +132,25 @@ def optipng(pathname: str) -> None:
         raise
 
 
-def gifsicle(pathname: str) -> None:
+def gifsicle(pathname: str) -> tuple[int,int]:
     try:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         out_file = wd + '/' + basename + '.smally.gif'
         cmdstr = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
-        cmd(cmdstr)
-        _log = pathname + ' '
+        _cmd(cmdstr)
         size_1 = os.path.getsize(pathname)
         size_2 = os.path.getsize(out_file)
         if size_1 <= size_2:
-            _log += '--'
             os.remove(out_file)
+            saved = 0
         else:
-            saved = size_1 - size_2
-            sym = '-' if saved > 0 else '+'
-            _log += sym + str(abs(saved)) \
-                        + ' ' + sym \
-                        + str(round(abs(saved)/size_1*100,2))\
-                        + '%'
-            _, mtime, _ = cmd('stat -c "%y" ' + pathname)
+            saved = size_2 - size_1
+            _, mtime, _ = _cmd('stat -c "%y" ' + pathname)
             os.remove(pathname)
             os.rename(out_file, pathname)
-            cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
-        print(_log)
+            _cmd('touch -m -d "'+mtime.decode()+'" '+pathname)
+        return saved, size_1
     except BaseException:
         try:
             if os.path.exists(pathname):
@@ -186,16 +162,14 @@ def gifsicle(pathname: str) -> None:
         raise
 
 
-def _show(file_type: str,
-          pathname: str,
-          saved: tuple[int,float]) -> None:
-    _log =(pathname
-           + ' '
-           + '--' if saved[0]==0 else str(saved[0])+' '+str(round(saved[1],2))
-           + ' '
-           + '' if file_type!='j' else
-                        '[p]' if is_jpeg_progressive(pathname) else '[b]')
-    print(_log)
+def _show(file_type: str, pathname: str, saved: tuple[int,int]) -> None:
+    if saved[0] == 0:
+        logstr = '--'
+    else:
+        logstr = str(saved[0]) +' '+ str(round(saved[0]/saved[1]*100,2)) + '%'
+    progressive = '' if file_type!='j' else \
+                    ('[b]','[p]')[is_jpeg_progressive(pathname)]
+    print(' '.join((pathname, logstr, progressive)))
 
 
 _VER = 'smally V0.52 by xinlin-z (https://github.com/xinlin-z/smally)'
@@ -215,9 +189,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.jpegtran:
-        jpegtran(args.pathname)
+        _show('j', args.pathname, jpegtran(args.pathname))
     elif args.optipng:
-        optipng(args.pathname)
+        _show('p', args.pathname, optipng(args.pathname))
     elif args.gifsicle:
-        gifsicle(args.pathname)
+        _show('g', args.pathname, gifsicle(args.pathname))
+
+    sys.exit(0)
 

@@ -215,6 +215,8 @@ if __name__ == '__main__':
     cmdstr = 'file %s | awk "{print \$2}"' % args.pathname
     rcode, stdout, stderr = _cmd(cmdstr, shell=True)
     if rcode != 0:
+        # pathname might contains unusual chars, here is test
+        print('# error occure while processing %s' % args.pathname)
         print(stderr.decode(), end='')
         sys.exit(rcode)
     pathname_type = stdout.decode().strip()

@@ -179,10 +179,12 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
     print(' '.join((pathname, logstr, progressive)))
 
 
-def _find_xargs(ftype: str='') -> None:
+def _find_xargs(pnum: int, ftype: str='') -> None:
+    pnum = max(1, pnum)
+    print('# parallel process number: ', pnum)
     cmdstr = 'find %s -type f -print0 | '\
              'xargs -P%d -I! -0 python %s %s !' \
-             % (args.pathname, mp.cpu_count(), sys.argv[0], ftype)
+             % (args.pathname, pnum, sys.argv[0], ftype)
     proc = subprocess.Popen(cmdstr, shell=True,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
@@ -205,6 +207,8 @@ if __name__ == '__main__':
     ftype.add_argument('-g', '--gifsicle', action='store_true',
                        help='use gifsicle to compress gif file')
     parser.add_argument('pathname', help='specify the pathname')
+    parser.add_argument('-P', type=int, default=mp.cpu_count(),
+                        help='process number, default is by cpu_count')
     args = parser.parse_args()
 
     # get pathname type
@@ -228,9 +232,9 @@ if __name__ == '__main__':
         elif pathname_type == 'directory':
             file_type = '-j' if args.jpegtran else \
                             '-p' if args.optipng else '-g'
-            _find_xargs(file_type)
+            _find_xargs(args.P, file_type)
         else:
-            print('File type specified does not match %s.' % args.pathname)
+            print('# type specified does not match with %s' % args.pathname)
             sys.exit(1)
         sys.exit(0)
 
@@ -242,6 +246,6 @@ if __name__ == '__main__':
     elif pathname_type == 'GIF':
         _show('g', args.pathname, gifsicle(args.pathname))
     elif pathname_type == 'directory':
-        _find_xargs()
+        _find_xargs(args.P)
     sys.exit(0)
 

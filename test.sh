@@ -21,8 +21,11 @@ check_tool gifsicle
 echo '# Test smally.py'
 cp -r testpic _ttpic
 python3 smally.py --jpegtran _ttpic/102.jpg
+python3 smally.py -j _ttpic/102.jpg
 python3 smally.py --optipng _ttpic/201.png
+python3 smally.py -p _ttpic/201.png
 python3 smally.py --gifsicle _ttpic/302.gif
+python3 smally.py -g _ttpic/302.gif
 rm -rf _ttpic
 
 

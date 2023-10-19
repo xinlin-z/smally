@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compress jpeg, png and gif losslessly by jpegtran, optipng and gifsicle.
+Compress JPEG, PNG and GIF losslessly by jpegtran, optipng and gifsicle.
 
 Author:   xinlin-z
 Github:   https://github.com/xinlin-z/smally
@@ -14,8 +14,8 @@ import argparse
 
 
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
-    """execute a cmd w/o shell,
-    return returncode, stdout, stderr"""
+    """ execute a cmd w/o shell,
+        return returncode, stdout, stderr """
     proc = subprocess.run(cmd if shell else cmd.split(),
                           shell=shell,
                           stdout=subprocess.PIPE,
@@ -27,7 +27,7 @@ def is_jpeg_progressive(pathname: str) -> bool:
     """check if pathname is progressive jpg format"""
     cmdstr = 'file %s | grep progressive' % pathname
     code, _, _ = _cmd(cmdstr, shell=True)
-    return True if code==0 else False
+    return code == 0
 
 
 def jpegtran(pathname: str) -> tuple[int,int]:
@@ -168,29 +168,30 @@ def gifsicle(pathname: str) -> tuple[int,int]:
         raise
 
 
-def _show(file_type: str, pathname: str, saved: tuple[int,int]) -> None:
+def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
     if saved[0] == 0:
         logstr = '--'
     else:
         logstr = str(saved[0]) +' '+ str(round(saved[0]/saved[1]*100,2)) + '%'
-    progressive = '' if file_type!='j' else \
+    progressive = '' if ftype!='j' else \
                     ('[b]','[p]')[is_jpeg_progressive(pathname)]
     print(' '.join((pathname, logstr, progressive)))
 
 
-_VER = 'smally V0.52 by xinlin-z (https://github.com/xinlin-z/smally)'
+_VER = 'smally V0.53 by xinlin-z \
+        (https://github.com/xinlin-z/smally)'
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '--version', action='version', version=_VER)
-    file_type = parser.add_mutually_exclusive_group(required=True)
-    file_type.add_argument('-j', '--jpegtran', action='store_true',
-                           help='use jpegtran to compress jpeg file')
-    file_type.add_argument('-p', '--optipng', action='store_true',
-                           help='use optipng to compress png file')
-    file_type.add_argument('-g', '--gifsicle', action='store_true',
-                           help='use gifsicle to compress gif file')
+    ftype = parser.add_mutually_exclusive_group(required=True)
+    ftype.add_argument('-j', '--jpegtran', action='store_true',
+                       help='use jpegtran to compress jpeg file')
+    ftype.add_argument('-p', '--optipng', action='store_true',
+                       help='use optipng to compress png file')
+    ftype.add_argument('-g', '--gifsicle', action='store_true',
+                       help='use gifsicle to compress gif file')
     parser.add_argument('pathname', help='specify the pathname')
     args = parser.parse_args()
 

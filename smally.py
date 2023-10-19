@@ -185,7 +185,7 @@ _VER = 'smally V0.53 by xinlin-z \
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '--version', action='version', version=_VER)
-    ftype = parser.add_mutually_exclusive_group(required=True)
+    ftype = parser.add_mutually_exclusive_group()
     ftype.add_argument('-j', '--jpegtran', action='store_true',
                        help='use jpegtran to compress jpeg file')
     ftype.add_argument('-p', '--optipng', action='store_true',
@@ -194,6 +194,23 @@ if __name__ == '__main__':
                        help='use gifsicle to compress gif file')
     parser.add_argument('pathname', help='specify the pathname')
     args = parser.parse_args()
+
+    if not (args.jpegtran or args.optipng or args.gifsicle):
+        cmdstr = 'file %s | awk "{print \$2}"' % args.pathname
+        rcode, stdout, stderr = _cmd(cmdstr, shell=True)
+        if rcode == 0:
+            stdout = stdout.strip()
+            if stdout == b'JPEG':
+                args.jpegtran = True
+            elif stdout == b'PNG':
+                args.optipng = True
+            elif stdout == b'GIF':
+                args.gifsicle = True
+            elif stdout == b'directory':
+                cmdstr = 'find %s -type f -print0 | xargs ...'
+        else:
+            print(stderr)
+            sys.exit(rcode)
 
     if args.jpegtran:
         _show('j', args.pathname, jpegtran(args.pathname))

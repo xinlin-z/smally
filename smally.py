@@ -11,6 +11,7 @@ import sys
 import os
 import subprocess
 import argparse
+import multiprocessing as mp
 
 
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
@@ -178,6 +179,17 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
     print(' '.join((pathname, logstr, progressive)))
 
 
+def _find_xargs(ftype: str='') -> None:
+    cmdstr = 'find %s -type f -print0 | '\
+             'xargs -P%d -I! -0 python %s %s !' \
+             % (args.pathname, mp.cpu_count(), sys.argv[0], ftype)
+    proc = subprocess.Popen(cmdstr, shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+    for line in iter(proc.stdout.readline, b''):
+        print(line.decode(), end='')
+
+
 _VER = 'smally V0.53 by xinlin-z \
         (https://github.com/xinlin-z/smally)'
 
@@ -195,29 +207,41 @@ if __name__ == '__main__':
     parser.add_argument('pathname', help='specify the pathname')
     args = parser.parse_args()
 
-    if not (args.jpegtran or args.optipng or args.gifsicle):
-        cmdstr = 'file %s | awk "{print \$2}"' % args.pathname
-        rcode, stdout, stderr = _cmd(cmdstr, shell=True)
-        if rcode == 0:
-            stdout = stdout.strip()
-            if stdout == b'JPEG':
-                args.jpegtran = True
-            elif stdout == b'PNG':
-                args.optipng = True
-            elif stdout == b'GIF':
-                args.gifsicle = True
-            elif stdout == b'directory':
-                cmdstr = 'find %s -type f -print0 | xargs ...'
+    # get pathname type
+    cmdstr = 'file %s | awk "{print \$2}"' % args.pathname
+    rcode, stdout, stderr = _cmd(cmdstr, shell=True)
+    if rcode != 0:
+        print(stderr.decode(), end='')
+        sys.exit(rcode)
+    pathname_type = stdout.decode().strip()
+    if pathname_type not in ('JPEG','PNG','GIF','directory'):
+        sys.exit(1)
+
+    # if type specified
+    if args.jpegtran or args.optipng or args.gifsicle:
+        if args.jpegtran and pathname_type=='JPEG':
+            _show('j', args.pathname, jpegtran(args.pathname))
+        elif args.optipng and pathname_type=='PNG':
+            _show('p', args.pathname, optipng(args.pathname))
+        elif args.gifsicle and pathname_type=='GIF':
+            _show('g', args.pathname, gifsicle(args.pathname))
+        elif pathname_type == 'directory':
+            file_type = '-j' if args.jpegtran else \
+                            '-p' if args.optipng else '-g'
+            _find_xargs(file_type)
         else:
-            print(stderr)
-            sys.exit(rcode)
+            print('File type specified does not match %s.' % args.pathname)
+            sys.exit(1)
+        sys.exit(0)
 
-    if args.jpegtran:
+    # no type specified
+    if pathname_type == 'JPEG':
         _show('j', args.pathname, jpegtran(args.pathname))
-    elif args.optipng:
+    elif pathname_type == 'PNG':
         _show('p', args.pathname, optipng(args.pathname))
-    elif args.gifsicle:
+    elif pathname_type == 'GIF':
         _show('g', args.pathname, gifsicle(args.pathname))
-
+    elif pathname_type == 'directory':
+        _find_xargs()
     sys.exit(0)
 

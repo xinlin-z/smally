@@ -18,7 +18,7 @@ check_tool optipng
 check_tool gifsicle
 
 
-echo '# Test smally.py'
+echo '# Test smally.py with type'
 cp -r testpic _ttpic
 python3 smally.py -j _ttpic/102.jpg
 python3 smally.py -p _ttpic/201.png
@@ -30,6 +30,11 @@ cp -r testpic _ttpic
 python3 smally.py _ttpic/102.jpg
 python3 smally.py _ttpic/201.png
 python3 smally.py _ttpic/302.gif
+rm -rf _ttpic
+
+echo '# Test smally.py with directory'
+cp -r testpic _ttpic
+python3 smally.py _ttpic
 rm -rf _ttpic
 
 echo '# Test smally.sh'

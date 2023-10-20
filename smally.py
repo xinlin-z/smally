@@ -12,12 +12,13 @@ import os
 import subprocess
 import argparse
 import multiprocessing as mp
+import shlex
 
 
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
     """ execute a command w/o shell,
         return returncode, stdout, stderr """
-    proc = subprocess.run(cmd if shell else cmd.split(),
+    proc = subprocess.run(cmd if shell else shlex.split(cmd),
                           shell=shell,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)

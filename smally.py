@@ -173,7 +173,7 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
     if saved[0] == 0:
         logstr = '--'
     else:
-        logstr = str(saved[0]) +' '+ str(round(saved[0]/saved[1]*100,2)) + '%'
+        logstr = str(saved[0]) +' '+ str(round(saved[0]/saved[1]*100,2)) +'%'
     progressive = '' if ftype!='j' else \
                     ('[b]','[p]')[is_jpeg_progressive(pathname)]
     print(' '.join((pathname, logstr, progressive)))
@@ -185,11 +185,15 @@ def _find_xargs(pnum: int, ftype: str='') -> None:
     cmdstr = 'find %s -type f -print0 | '\
              'xargs -P%d -I! -0 python %s %s !' \
              % (args.pathname, pnum, sys.argv[0], ftype)
-    proc = subprocess.Popen(cmdstr, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
-    for line in iter(proc.stdout.readline, b''):
-        print(line.decode(), end='')
+    try:
+        proc = subprocess.Popen(cmdstr, shell=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
+        for line in iter(proc.stdout.readline, b''):
+            print(line.decode(), end='')
+    except subprocess.SubprocessError as e:
+        print(repr(e))
+        sys.exit(3)  # subprocess error
 
 
 _VER = 'smally V0.53 by xinlin-z \
@@ -216,12 +220,12 @@ if __name__ == '__main__':
     rcode, stdout, stderr = _cmd(cmdstr, shell=True)
     if rcode != 0:
         # pathname might contains unusual chars, here is test
-        print('# error occure while processing %s' % args.pathname)
+        print('# error occure while executing: file %s' % args.pathname)
         print(stderr.decode(), end='')
         sys.exit(rcode)
     pathname_type = stdout.decode().strip()
     if pathname_type not in ('JPEG','PNG','GIF','directory'):
-        sys.exit(1)
+        sys.exit(2)  # file type not in range
 
     # if type specified
     if args.jpegtran or args.optipng or args.gifsicle:
@@ -236,7 +240,7 @@ if __name__ == '__main__':
                         '-p' if args.optipng else '-g'
             _find_xargs(args.P, file_type)
         else:
-            sys.exit(1)
+            sys.exit(1)  # file type not match
         sys.exit(0)
 
     # no type specified

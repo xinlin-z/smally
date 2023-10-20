@@ -180,12 +180,16 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
     print(' '.join((pathname, logstr, progressive)))
 
 
-def _find_xargs(pnum: int, ftype: str='') -> None:
+def _find_xargs(pnum: int, ftype: str='', recur: bool=False) -> None:
     pnum = max(1, pnum)
     print('# parallel process number: ', pnum)
-    cmdstr = 'find -L %s -type f -print0 | '\
-             'xargs -P%d -I! -0 python %s %s !' \
-             % (args.pathname, pnum, sys.argv[0], ftype)
+    cmdstr = 'find -L %s -type f -print0 %s | '\
+             'xargs -P%d -I+ -0 python %s %s +' \
+             % (args.pathname,
+                '' if recur else '-maxdepth 1',
+                pnum,
+                sys.argv[0],
+                ftype)
     try:
         proc = subprocess.Popen(cmdstr, shell=True,
                                          stdout=subprocess.PIPE,
@@ -211,9 +215,12 @@ if __name__ == '__main__':
                        help='use optipng to compress png file')
     ftype.add_argument('-g', '--gifsicle', action='store_true',
                        help='use gifsicle to compress gif file')
+    parser.add_argument('-r', '--recursive', action='store_true',
+                       help='recursively working on subdirectories ')
     parser.add_argument('pathname', help='specify the pathname')
     parser.add_argument('-P', type=int, default=mp.cpu_count(),
-                        help='process number, default is by cpu_count')
+                        help='parallel process number, '
+                             'default is logical cpu number')
     args = parser.parse_args()
 
     # get pathname type
@@ -237,9 +244,10 @@ if __name__ == '__main__':
         elif args.gifsicle and pathname_type=='GIF':
             _show('g', args.pathname, gifsicle(args.pathname))
         elif pathname_type == 'directory':
-            file_type = '-j' if args.jpegtran else \
-                        '-p' if args.optipng else '-g'
-            _find_xargs(args.P, file_type)
+            _find_xargs(args.P, ftype='-j' if args.jpegtran else
+                                      '-p' if args.optipng else
+                                      '-g',
+                                recur=args.recursive)
         else:
             sys.exit(1)  # file type not match
         sys.exit(0)
@@ -252,6 +260,6 @@ if __name__ == '__main__':
     elif pathname_type == 'GIF':
         _show('g', args.pathname, gifsicle(args.pathname))
     elif pathname_type == 'directory':
-        _find_xargs(args.P)
+        _find_xargs(args.P, '', args.recursive)
     sys.exit(0)
 

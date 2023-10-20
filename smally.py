@@ -15,7 +15,7 @@ import multiprocessing as mp
 
 
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
-    """ execute a cmd w/o shell,
+    """ execute a command w/o shell,
         return returncode, stdout, stderr """
     proc = subprocess.run(cmd if shell else cmd.split(),
                           shell=shell,
@@ -25,7 +25,7 @@ def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
 
 
 def is_jpeg_progressive(pathname: str) -> bool:
-    """check if pathname is progressive jpg format"""
+    """ check if pathname is progressive jpg format """
     cmdstr = 'file %s | grep progressive' % pathname
     code, _, _ = _cmd(cmdstr, shell=True)
     return code == 0
@@ -43,7 +43,7 @@ def jpegtran(pathname: str) -> tuple[int,int]:
                                                         % (file_1, pathname)
         _cmd(cmd_1)
         # progressive
-        file_2 = wd + '/' + basename + 'smally.jpg.progressive'
+        file_2 = wd + '/' + basename + '.smally.jpg.progressive'
         cmd_2 = 'jpegtran -copy none -progressive -optimize -outfile %s %s'\
                                                         % (file_2, pathname)
         _cmd(cmd_2)
@@ -144,7 +144,7 @@ def gifsicle(pathname: str) -> tuple[int,int]:
         basename = os.path.basename(pathname)
         wd = os.path.dirname(os.path.abspath(pathname))
         out_file = wd + '/' + basename + '.smally.gif'
-        cmdstr = 'gifsicle -O3 --colors 256 %s -o %s'%(pathname, out_file)
+        cmdstr = 'gifsicle -O3 --colors 256 %s -o %s' % (pathname, out_file)
         _cmd(cmdstr)
         size_1 = os.path.getsize(pathname)
         size_2 = os.path.getsize(out_file)
@@ -212,7 +212,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # get pathname type
-    cmdstr = 'file %s | awk "{print \$2}"' % args.pathname
+    cmdstr = "file %s | awk '{print $2}'" % args.pathname
     rcode, stdout, stderr = _cmd(cmdstr, shell=True)
     if rcode != 0:
         # pathname might contains unusual chars, here is test
@@ -233,10 +233,9 @@ if __name__ == '__main__':
             _show('g', args.pathname, gifsicle(args.pathname))
         elif pathname_type == 'directory':
             file_type = '-j' if args.jpegtran else \
-                            '-p' if args.optipng else '-g'
+                        '-p' if args.optipng else '-g'
             _find_xargs(args.P, file_type)
         else:
-            print('# type specified does not match with %s' % args.pathname)
             sys.exit(1)
         sys.exit(0)
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Compress JPEG, PNG and GIF losslessly by jpegtran, optipng and gifsicle.
+To compress JPEG, PNG and GIF file losslessly by jpegtran, optipng
+and gifsicle respectively in batch mode, in-place and keep mtime
+unchanged.
 
 Author:   xinlin-z
 Github:   https://github.com/xinlin-z/smally
@@ -18,11 +20,11 @@ import shlex
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
     """ execute a command w/o shell,
         return returncode, stdout, stderr """
-    proc = subprocess.run(cmd if shell else shlex.split(cmd),
-                          shell=shell,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
-    return proc.returncode, proc.stdout, proc.stderr
+    p = subprocess.run(cmd if shell else shlex.split(cmd),
+                       shell=shell,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+    return p.returncode, p.stdout, p.stderr
 
 
 def is_jpeg_progressive(pathname: str) -> bool:
@@ -175,15 +177,15 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
         logstr = '--'
     else:
         logstr = str(saved[0]) +' '+ str(round(saved[0]/saved[1]*100,2)) +'%'
-    progressive = '' if ftype!='j' else \
-                    ('[b]','[p]')[is_jpeg_progressive(pathname)]
-    print(' '.join((pathname, logstr, progressive)))
+    tail = '' if ftype!='j' else \
+                  '[p]' if is_jpeg_progressive(pathname) else '[b]'
+    print(' '.join((pathname, logstr, tail)))
 
 
 def _find_xargs(pnum: int, ftype: str='', recur: bool=False) -> None:
     pnum = max(1, pnum)
     print('# parallel process number: ', pnum)
-    cmdstr = 'find -L %s -type f -print0 %s | '\
+    cmdstr = 'find -L %s -type f -print0 %s | ' \
              'xargs -P%d -I+ -0 python %s %s +' \
              % (args.pathname,
                 '' if recur else '-maxdepth 1',
@@ -191,12 +193,12 @@ def _find_xargs(pnum: int, ftype: str='', recur: bool=False) -> None:
                 sys.argv[0],
                 ftype)
     try:
-        proc = subprocess.Popen(cmdstr, shell=True,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE)
-        for line in iter(proc.stdout.readline, b''):
+        p = subprocess.Popen(cmdstr, shell=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
+        for line in iter(p.stdout.readline, b''):
             print(line.decode(), end='')
-    except subprocess.SubprocessError as e:
+    except Exception as e:
         print(repr(e))
         sys.exit(3)  # subprocess error
 
@@ -217,7 +219,8 @@ if __name__ == '__main__':
                        help='use gifsicle to compress gif file')
     parser.add_argument('-r', '--recursive', action='store_true',
                        help='recursively working on subdirectories ')
-    parser.add_argument('pathname', help='specify the pathname')
+    parser.add_argument('pathname', help='specify the pathname, '
+                                         'file or directory')
     parser.add_argument('-P', type=int, default=mp.cpu_count(),
                         help='parallel process number, '
                              'default is logical cpu number')

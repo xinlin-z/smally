@@ -196,7 +196,7 @@ def _find_xargs(pnum: int, ftype: str='', recur: bool=False) -> None:
         p = subprocess.Popen(cmdstr, shell=True,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE)
-        for line in iter(p.stdout.readline, b''):
+        for line in iter(p.stdout.readline, b''):  # type: ignore
             print(line.decode(), end='')
     except Exception as e:
         print(repr(e))

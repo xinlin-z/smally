@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = 'smally'
+version = '0.53'
+requires-python = '>=3.8'
+description = 'To compress JPEG, PNG and GIF files losslessly in batch mode'
+readme = 'README.md'
+license = { file='LICENSE' }
+keywords = ['JPEG', 'PNG', 'GIF', 'batch', 'compress']
+authors = [
+  { name='xinlin-z', email='xinlin.zhang@hotmail.com' },
+]
+classifiers = [
+    'Programming Language :: Python :: 3',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: POSIX :: Linux',
+]
+
+
+[project.urls]
+homepage = 'https://github.com/xinlin-z/smally'
+

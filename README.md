@@ -54,7 +54,7 @@ use it when deal with a directory.
 `-P<N>`, parallel process number, if it is missing, the logical cpu
 count number will be used.
 
-## API
+## APIs
 
 4 APIs provided by smally:
 
@@ -74,8 +74,13 @@ def is_jpeg_progressive(pathname: str) -> bool: ...
 The first int in returned tuple is the byte number saved. It could be zero,
 which means no save. The second int is the original file size.
 
-## Screenshot
+## Showcase
 
-![smally](/screenshot.png)
-
+```shell
+$ python -m smally -r tt -P8
+# parallel process number:  8
+tt/102.jpg -24157 -16.38% [p]
+tt/302.gif -333056 -19.67%
+tt/201.png -548 -26.37%
+```
 

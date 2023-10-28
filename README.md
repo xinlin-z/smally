@@ -1,4 +1,11 @@
-{toc}
+* [How to Compress](#How-to-Compress)
+    * [JPEG](#JPEG)
+    * [PNG](#PNG)
+    * [GIF](#GIF)
+* [How to Install](#How-to-Install)
+* [How to Use](#How-to-Use)
+* [APIs](#APIs)
+* [Showcase](#Showcase)
 
 Smally is a simple tool to compress JPEG, PNG and GIF files losslessly,
 by invoking the famous `jpegtran`, `optipng` and `gifsicle` tools,

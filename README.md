@@ -1,3 +1,5 @@
+# Smally
+
 * [How to Compress](#How-to-Compress)
     * [JPEG](#JPEG)
     * [PNG](#PNG)

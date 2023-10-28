@@ -86,10 +86,16 @@ which means no save. The second int is the original file size.
 ## Showcase
 
 ```shell
-$ python -m smally -r tt -P8
-# parallel process number:  8
-tt/102.jpg -24157 -16.38% [p]
-tt/302.gif -333056 -19.67%
-tt/201.png -548 -26.37%
+$ python -m smally -r smally/tpic -P4
+# parallel process number:  4
+smally/tpic/102.jpg -24157 -16.38% [p]
+smally/tpic/302.gif -333056 -19.67%
+smally/tpic/testpic/302.gif -333056 -19.67%
+smally/tpic/testpic/102.jpg -24157 -16.38% [p]
+smally/tpic/201.png -548 -26.37%
+smally/tpic/testpic/201.png -548 -26.37%
+smally/tpic/testpic/testpic/102.jpg -24157 -16.38% [p]
+smally/tpic/testpic/testpic/302.gif -333056 -19.67%
+smally/tpic/testpic/testpic/201.png -548 -26.37%
 ```
 

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = 'smally'
-version = '0.53'
+version = '0.525'
 requires-python = '>=3.8'
 description = 'To compress JPEG, PNG and GIF files losslessly in batch mode'
 readme = 'README.md'
@@ -17,7 +17,7 @@ authors = [
 classifiers = [
     'Programming Language :: Python :: 3',
     'License :: OSI Approved :: MIT License',
-    'Operating System :: POSIX :: Linux',
+    'Operating System :: POSIX',
 ]
 
 

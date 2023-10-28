@@ -17,6 +17,9 @@ import multiprocessing as mp
 import shlex
 
 
+__all__ = ['is_jpeg_progressive', 'jpegtran', 'optipng', 'gifsicle']
+
+
 def _cmd(cmd: str, shell: bool=False) -> tuple[int,bytes,bytes]:
     """ execute a command w/o shell,
         return returncode, stdout, stderr """

@@ -9,6 +9,11 @@ Github:   https://github.com/xinlin-z/smally
 Blog:     https://cs.pynote.net
 License:  MIT
 """
+import platform
+if platform.system() == 'Windows':
+    raise NotImplementedError('Not yet support Windows OS!')
+
+
 import sys
 import os
 import subprocess

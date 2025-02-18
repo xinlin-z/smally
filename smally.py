@@ -191,7 +191,7 @@ def _find_xargs(pnum: int, pathname: str,
     try:
         p = subprocess.Popen(cmdstr, shell=True,
                                      stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+                                     stderr=subprocess.STDOUT)
         for line in iter(p.stdout.readline, b''):  # type: ignore
             print(line.decode(), end='')
     except Exception as e:
@@ -203,7 +203,7 @@ def _find_xargs(pnum: int, pathname: str,
 TNAME = 'filescan'
 FDBNAME = '.smally.db'
 CREATE_SQL = f"""
-create table {TNAME}(
+create table if not exists {TNAME}(
     id integer primary key,
     fname text not null unique,  -- file basename, include suffix
     bsize int,                   -- byte size

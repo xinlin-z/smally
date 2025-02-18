@@ -182,7 +182,7 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
 
 
 def _find_xargs(pnum: int, pathname: str,
-                ftype: str='', recur: bool=False) -> None:
+                cmdline: str='', recur: bool=False) -> None:
     pnum = min(mp.cpu_count(), pnum)
     print('# parallel process number: ', pnum)
     cmdstr = 'find -L %s -type f -print0 %s | ' \
@@ -191,7 +191,7 @@ def _find_xargs(pnum: int, pathname: str,
                 '' if recur else '-maxdepth 1',
                 pnum,
                 sys.argv[0],
-                ftype)
+                cmdline)
     try:
         p = subprocess.Popen(cmdstr, shell=True,
                                      stdout=subprocess.PIPE,
@@ -311,11 +311,11 @@ if __name__ == '__main__':
     elif args.gifsicle and pathname_type=='GIF':
         doer = gifsicle
     elif pathname_type == 'directory':
-        ftype = ''
-        ftype += ' -j' if args.jpegtran else ''
-        ftype += ' -p' if args.optipng else ''
-        ftype += ' -g' if args.gifsicle else ''
-        _find_xargs(args.P, args.pathname, ftype, args.recursive)
+        cmdline = ''
+        cmdline += ' -j' if args.jpegtran else ''
+        cmdline += ' -p' if args.optipng else ''
+        cmdline += ' -g' if args.gifsicle else ''
+        _find_xargs(args.P, args.pathname, cmdline, args.recursive)
         sys.exit(0)
     else:
         sys.exit(1)  # file type not match

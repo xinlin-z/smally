@@ -263,6 +263,17 @@ class operate_db:
         conn.commit()
         conn.close()
 
+    def delete(self, pathname) -> None:
+        conn = sqlite3.connect(self.dbfile)
+        cur = conn.cursor()
+        sql = f'delete from {TNAME} where fname="{self.basename}"'
+        cur.execute(sql)
+        conn.commit()
+        sql = f'select count(*) from {TNAME}'
+        if cur.execute(sql).fetchone()[0] == 0:
+            _cmd(f'rm {self.wd}/{FDBNAME}')
+        conn.close()
+
 
 _VER = 'smally V0.54 by xinlin-z \
         (https://github.com/xinlin-z/smally)'
@@ -279,8 +290,10 @@ if __name__ == '__main__':
                         help='use gifsicle to compress gif file')
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='recursively working on subdirectories ')
-    parser.add_argument('pathname', help='specify the pathname, '
-                                         'file or directory')
+    parser.add_argument('-c', '--cleandb', action='store_true',
+                        help='clean database record for pathname ')
+    parser.add_argument('pathname',
+                        help='specify one pathname, file or directory')
     parser.add_argument('-P',
                         type=int,
                         default=mp.cpu_count(),
@@ -288,6 +301,7 @@ if __name__ == '__main__':
                         help='number of parallel processes, '
                              'default is the logical cpu number')
     args = parser.parse_args()
+    args.pathname = args.pathname.strip()
 
     # get pathname type
     # pathname might contains unusual chars, here is test
@@ -315,13 +329,16 @@ if __name__ == '__main__':
         cmdline += ' -j' if args.jpegtran else ''
         cmdline += ' -p' if args.optipng else ''
         cmdline += ' -g' if args.gifsicle else ''
+        cmdline += ' -c' if args.cleandb else ''
         _find_xargs(args.P, args.pathname, cmdline, args.recursive)
         sys.exit(0)
     else:
         sys.exit(1)  # file type not match
 
     db = operate_db(args.pathname)
-    if db.need_compress():
+    if args.cleandb:
+        db.delete(args.pathname)
+    elif db.need_compress():
         sizes = doer(args.pathname)
         db.update(sizes[1]+sizes[0])  # saved is negative!
         _show(pathname_type, args.pathname, sizes)

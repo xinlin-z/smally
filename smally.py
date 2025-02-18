@@ -130,18 +130,13 @@ def jpegtran(pathname: str) -> tuple[int,int]:
         raise
 
 
-class make_choice:
-    """ execute command, compare size, and make choice """
-
-    def __init__(self, cmdstr: str) -> None:
-        self.cmdstr = cmdstr
-
-    def __call__(self, pathname: str) ->tuple[int,int]:
+def make_choice(cmdline):
+    def rfunc(pathname):
         try:
             basename = os.path.basename(pathname)
             wd = os.path.dirname(os.path.abspath(pathname))
             tmpfile = wd + '/' + basename + '.smally'
-            cmds = self.cmdstr % (pathname,tmpfile)
+            cmds = cmdline % (pathname,tmpfile)
             _cmd(cmds)
             size_1 = os.path.getsize(pathname)
             size_2 = os.path.getsize(tmpfile)
@@ -164,6 +159,7 @@ class make_choice:
             except FileNotFoundError:
                 pass
             raise
+    return rfunc
 
 
 # must have two %s

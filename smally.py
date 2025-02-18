@@ -266,9 +266,10 @@ class operate_db:
         cur.execute(sql)
         conn.commit()
         sql = f'select count(*) from {TNAME}'
-        if cur.execute(sql).fetchone()[0] == 0:
-            _cmd(f'rm {self.wd}/{FDBNAME}')
+        result = cur.execute(sql).fetchone()[0]
         conn.close()
+        if result == 0:
+            _cmd(f'rm {self.wd}/{FDBNAME}')
 
 
 _VER = 'smally V0.54 by xinlin-z \

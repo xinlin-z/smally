@@ -354,14 +354,14 @@ if __name__ == '__main__':
         wd = os.path.dirname(os.path.abspath(args.pathname))
         _cmd(f'rm -f {wd}/{FDBNAME}')
         _cmd(f'rm -f {wd}/{FDBLOCK}')
-
-    db = operate_db(args.pathname)
-    if args.deletedb:
-        db.delete(args.pathname)
-    elif db.need_compress():
-        sizes = doer(args.pathname)
-        db.update(sizes[1]+sizes[0])  # saved is negative!
-        _show(pathname_type, args.pathname, sizes)
+    else:
+        db = operate_db(args.pathname)
+        if args.deletedb:
+            db.delete(args.pathname)
+        elif db.need_compress():
+            sizes = doer(args.pathname)
+            db.update(sizes[1]+sizes[0])  # saved is negative!
+            _show(pathname_type, args.pathname, sizes)
 
     sys.exit(0)
 

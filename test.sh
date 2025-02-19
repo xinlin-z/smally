@@ -35,17 +35,24 @@ python3 smally.py _ttpic/201.png
 python3 smally.py _ttpic/302.gif
 rm -rf _ttpic
 
-echo '# Test smally.py with single file (cleandb)'
+echo '# Test smally.py with single file (delete)'
 cp -r testpic _ttpic
 python3 smally.py _ttpic/102.jpg
 python3 smally.py _ttpic/201.png
 python3 smally.py _ttpic/302.gif
-python3 smally.py -c _ttpic/102.jpg
-python3 smally.py -c _ttpic/201.png
-python3 smally.py -c _ttpic/302.gif
+python3 smally.py -d _ttpic/102.jpg
+python3 smally.py -d _ttpic/201.png
+python3 smally.py -d _ttpic/302.gif
 python3 smally.py _ttpic/102.jpg
 python3 smally.py _ttpic/201.png
 python3 smally.py _ttpic/302.gif
+rm -rf _ttpic
+
+echo '# Test smally.py with single file (clean)'
+cp -r testpic _ttpic
+python3 smally.py _ttpic/102.jpg
+python3 smally.py -c _ttpic/102.jpg
+python3 smally.py _ttpic/102.jpg
 rm -rf _ttpic
 
 echo '# Test smally.py with directory'

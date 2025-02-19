@@ -182,7 +182,7 @@ def _find_xargs(pnum: int, pathname: str,
                 cmdline: str='', recur: bool=False) -> None:
     pnum = min(mp.cpu_count(), pnum)
     print('# parallel process number: ', pnum)
-    cmdstr = 'find -L %s -type f -print0 %s | ' \
+    cmdstr = 'find -L %s %s -type f -print0 | ' \
              'xargs -P%d -I+ -0 python %s %s +' \
              % (pathname,
                 '' if recur else '-maxdepth 1',
@@ -344,13 +344,19 @@ if __name__ == '__main__':
         cmdline += ' -p' if args.optipng else ''
         cmdline += ' -g' if args.gifsicle else ''
         cmdline += ' -d' if args.deletedb else ''
+        cmdline += ' -c' if args.clean else ''
         _find_xargs(args.P, args.pathname, cmdline, args.recursive)
         sys.exit(0)
     else:
         sys.exit(1)  # file type not match
 
+    # bloody work is done here!
     db = operate_db(args.pathname)
-    if args.deletedb:
+    if args.clean:
+        wd = os.path.dirname(os.path.abspath(args.pathname))
+        _cmd(f'rm -f {wd}/{FDBNAME}')
+        _cmd(f'rm -f {wd}/{FDBLOCK}')
+    elif args.deletedb:
         db.delete(args.pathname)
     elif db.need_compress():
         sizes = doer(args.pathname)

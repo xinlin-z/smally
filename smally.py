@@ -350,13 +350,13 @@ if __name__ == '__main__':
     else:
         sys.exit(1)  # file type not match
 
-    # bloody work is done here!
-    db = operate_db(args.pathname)
     if args.clean:
         wd = os.path.dirname(os.path.abspath(args.pathname))
         _cmd(f'rm -f {wd}/{FDBNAME}')
         _cmd(f'rm -f {wd}/{FDBLOCK}')
-    elif args.deletedb:
+
+    db = operate_db(args.pathname)
+    if args.deletedb:
         db.delete(args.pathname)
     elif db.need_compress():
         sizes = doer(args.pathname)

@@ -221,11 +221,11 @@ class lock_db:
         self.lockfile = f'{self.dirname}/{FDBLOCK}'
         _cmd(f'touch {self.lockfile}')
 
-    def acquire(self):
+    def __enter__(self):
         self.fd = open(self.lockfile,'w')
         fcntl.fcntl(self.fd, fcntl.LOCK_EX)
 
-    def release(self):
+    def __exit__(self, *args):
         fcntl.fcntl(self.fd, fcntl.LOCK_UN)
         self.fd.close()
 
@@ -242,25 +242,21 @@ class operate_db:
         self._detect_create_table()
 
     def _detect_create_table(self) -> None:
-        lock = lock_db(self.wd)
-        lock.acquire()
-        conn = sqlite3.connect(self.dbfile)
-        cur = conn.cursor()
-        cur.execute(CREATE_SQL)
-        conn.commit()
-        conn.close()
-        lock.release()
+        with lock_db(self.wd):
+            conn = sqlite3.connect(self.dbfile)
+            cur = conn.cursor()
+            cur.execute(CREATE_SQL)
+            conn.commit()
+            conn.close()
 
     def need_compress(self) -> bool:
-        lock = lock_db(self.wd)
-        lock.acquire()
-        conn = sqlite3.connect(self.dbfile)
-        cur = conn.cursor()
-        sql = f'select id, bsize, mtime from {TNAME}'\
-              f' where fname="{self.basename}"'
-        result = cur.execute(sql).fetchone()
-        conn.close()
-        lock.release()
+        with lock_db(self.wd):
+            conn = sqlite3.connect(self.dbfile)
+            cur = conn.cursor()
+            sql = f'select id, bsize, mtime from {TNAME}'\
+                  f' where fname="{self.basename}"'
+            result = cur.execute(sql).fetchone()
+            conn.close()
         if not result:
             return True
         self.id = result[0]
@@ -269,30 +265,26 @@ class operate_db:
         return False
 
     def update(self, bsize: int) -> None:
-        lock = lock_db(self.wd)
-        lock.acquire()
-        conn = sqlite3.connect(self.dbfile)
-        cur = conn.cursor()
-        if self.id:
-            sql = f'update {TNAME} set bsize=?,mtime=? where id={self.id}'
-            cur.execute(sql, (bsize,self.mtime))
-        else:
-            sql = f'insert into {TNAME}(fname,bsize,mtime) values(?,?,?)'
-            cur.execute(sql, (self.basename,bsize,self.mtime))
-        conn.commit()
-        conn.close()
-        lock.release()
+        with lock_db(self.wd):
+            conn = sqlite3.connect(self.dbfile)
+            cur = conn.cursor()
+            if self.id:
+                sql = f'update {TNAME} set bsize=?,mtime=? where id={self.id}'
+                cur.execute(sql, (bsize,self.mtime))
+            else:
+                sql = f'insert into {TNAME}(fname,bsize,mtime) values(?,?,?)'
+                cur.execute(sql, (self.basename,bsize,self.mtime))
+            conn.commit()
+            conn.close()
 
     def delete(self, pathname) -> None:
-        lock = lock_db(self.wd)
-        lock.acquire()
-        conn = sqlite3.connect(self.dbfile)
-        cur = conn.cursor()
-        sql = f'delete from {TNAME} where fname="{self.basename}"'
-        cur.execute(sql)
-        conn.commit()
-        conn.close()
-        lock.release()
+        with lock_db(self.wd):
+            conn = sqlite3.connect(self.dbfile)
+            cur = conn.cursor()
+            sql = f'delete from {TNAME} where fname="{self.basename}"'
+            cur.execute(sql)
+            conn.commit()
+            conn.close()
 
 
 _VER = 'smally V0.54 by xinlin-z \

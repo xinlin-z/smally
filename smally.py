@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Compress JPEG, PNG and GIF file by jpegtran, optipng
-and gifsicle losslessly and respectively in batch mode,
-inplace and keep mtime unchanged.
+Compress JPEG, PNG and GIF file by jpegtran, optipng, and gifsicle
+losslessly and respectively in batch and parallel mode, inplace and
+keep mtime unchanged.
 
 Author:   xinlin-z
 Github:   https://github.com/xinlin-z/smally
@@ -75,7 +75,7 @@ def jpegtran(pathname: str) -> tuple[int,int]:
         cmd_2 = 'jpegtran -copy none -progressive -optimize -outfile %s %s'\
                                                         % (file_2, pathname)
         _cmd(cmd_2)
-        # get jpg type
+        # get jpeg type
         progressive = is_jpeg_progressive(pathname)
         # choose the smallest one
         size = os.path.getsize(pathname)
@@ -84,16 +84,15 @@ def jpegtran(pathname: str) -> tuple[int,int]:
         if size <= size_1 and size <= size_2:
             select_file = 0
             if size == size_2 and not progressive:
-                select_file = 2  # progressive is preferred
+                select_file = 2     # progressive is preferred
         else:
             select_file = 2 if size_2<=size_1 else 1
         mtime = mtt.get(pathname)
-        # rm & mv
-        if select_file == 0:  # origin
+        if select_file == 0:        # origin
             os.remove(file_1)
             os.remove(file_2)
             saved = 0
-        elif select_file == 1:  # baseline
+        elif select_file == 1:      # baseline
             os.remove(pathname)
             os.remove(file_2)
             os.rename(file_1, pathname)
@@ -125,13 +124,15 @@ def jpegtran(pathname: str) -> tuple[int,int]:
                         os.rename(file_1, pathname)
                 elif os.path.exists(file_2):
                     os.rename(file_2, pathname)
-                else: os.rename(file_1, pathname)
+                else:
+                    os.rename(file_1, pathname)
         except UnboundLocalError:
             pass
         raise
 
 
 def make_choice(cmdline):
+    """ choice 1 out of 2 """
     def rfunc(pathname):
         try:
             basename = os.path.basename(pathname)
@@ -157,7 +158,7 @@ def make_choice(cmdline):
                     os.remove(tmpfile)
                 elif os.path.exists(tmpfile):
                     os.rename(tmpfile, pathname)
-            except FileNotFoundError:
+            except (FileNotFoundError,UnboundLocalError):
                 pass
             raise
     return rfunc
@@ -180,8 +181,12 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
 
 def _find_xargs(pnum: int, pathname: str,
                 cmdline: str='', recur: bool=False) -> None:
+    """ engine for batch and parallel processing """
     pnum = min(mp.cpu_count(), pnum)
     print('# parallel process number: ', pnum)
+
+    # -type f: only find files, no directories
+    # -maxdepth 1: only if recur is False
     cmdstr = 'find -L %s %s -type f -print0 | ' \
              'xargs -P%d -I+ -0 python %s %s +' \
              % (pathname,
@@ -189,7 +194,9 @@ def _find_xargs(pnum: int, pathname: str,
                 pnum,
                 sys.argv[0],
                 cmdline)
+
     try:
+        # redirect stderr to stdout
         p = subprocess.Popen(cmdstr, shell=True,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.STDOUT)
@@ -200,10 +207,10 @@ def _find_xargs(pnum: int, pathname: str,
         sys.exit(3)  # subprocess error
 
 
-# There is a SQLite database file for every folder to prevent from re-doing.
+# There is a SQLite database file in every folder
+# to prevent smally from re-doing.
 TNAME = 'filescan'
 FDBNAME = '.smally.db'
-FDBLOCK = '.sqlite3.lock'
 CREATE_SQL = f"""
 create table if not exists {TNAME}(
     id integer primary key,
@@ -212,9 +219,12 @@ create table if not exists {TNAME}(
     mtime blob                   -- mtime
 );
 """
+# I use a file lock to mutex multiple processes.
+FDBLOCK = '.sqlite3.lock'
 
 
 class lock_db:
+    """ lock for database operations, only support with clause """
 
     def __init__(self, dirname):
         self.dirname = dirname
@@ -231,6 +241,7 @@ class lock_db:
 
 
 class operate_db:
+    """ database operations class """
 
     def __init__(self, pathname: str) -> None:
         self.basename = os.path.basename(pathname)
@@ -322,7 +333,7 @@ if __name__ == '__main__':
     cmdstr = "file %s | awk '{print $2}'" % args.pathname
     rcode, stdout, stderr = _cmd(cmdstr, shell=True)
     if rcode != 0:
-        print('# error occure while executing: file %s' % args.pathname)
+        print('# error occure while executing command: file %s'%args.pathname)
         print(stderr.decode(), end='')
         sys.exit(rcode)
     pathname_type = stdout.decode().strip()
@@ -352,8 +363,7 @@ if __name__ == '__main__':
 
     if args.clean:
         wd = os.path.dirname(os.path.abspath(args.pathname))
-        _cmd(f'rm -f {wd}/{FDBNAME}')
-        _cmd(f'rm -f {wd}/{FDBLOCK}')
+        _cmd(f'rm -f {wd}/{FDBNAME} {wd}/{FDBLOCK}')
     else:
         db = operate_db(args.pathname)
         if args.deletedb:

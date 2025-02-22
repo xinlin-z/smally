@@ -58,15 +58,15 @@ $ pip install smally
 ## How to Use
 
 ```shell
-# inline help
+# command line help
 $ python -m smally -h
-# to compress a single file, if option is not presented,
+# compress a single file, if option is not presented,
 # smally will use file command to get file type info.
 $ python -m smally [-j|-p|-g] <pathname>
 # to compress a directory
 $ python -m smally -r -P<N> <pathname>
-# to compress all png file in a directory
-$ python -m smally -r -P<N> -p <pathname>
+# to compress all png and gif file in a directory
+$ python -m smally -r -P<N> -p -g <pathname>
 ```
 
 `-r`, recursive, it's a command line convention and normally you should
@@ -120,17 +120,5 @@ The second int is the original file size.
 
 ## Showcase
 
-```shell
-$ python -m smally -r smally/tpic -P4
-# parallel process number:  4
-smally/tpic/102.jpg -24157 -16.38% [p]
-smally/tpic/302.gif -333056 -19.67%
-smally/tpic/testpic/302.gif -333056 -19.67%
-smally/tpic/testpic/102.jpg -24157 -16.38% [p]
-smally/tpic/201.png -548 -26.37%
-smally/tpic/testpic/201.png -548 -26.37%
-smally/tpic/testpic/testpic/102.jpg -24157 -16.38% [p]
-smally/tpic/testpic/testpic/302.gif -333056 -19.67%
-smally/tpic/testpic/testpic/201.png -548 -26.37%
-```
+![smally.gif](/smally.gif)
 

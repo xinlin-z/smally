@@ -6,7 +6,7 @@ keep mtime unchanged.
 
 Author:   xinlin-z
 Github:   https://github.com/xinlin-z/smally
-Blog:     https://CS4096.com
+Blog:     https://xinlin-z.github.io
 License:  MIT
 """
 import platform
@@ -229,7 +229,6 @@ class lock_db:
     def __init__(self, dirname):
         self.dirname = dirname
         self.lockfile = f'{self.dirname}/{FDBLOCK}'
-        _cmd(f'touch {self.lockfile}')
 
     def __enter__(self):
         self.fd = open(self.lockfile,'w')

@@ -18,7 +18,6 @@ import sys
 import os
 import subprocess
 import argparse
-import multiprocessing as mp
 import shlex
 import sqlite3
 import fcntl
@@ -182,7 +181,7 @@ def _show(ftype: str, pathname: str, saved: tuple[int,int]) -> None:
 def _find_xargs(pnum: int, pathname: str,
                 cmdline: str='', recur: bool=False) -> None:
     """ engine for batch and parallel processing """
-    pnum = min(mp.cpu_count(), pnum)
+    pnum = min(os.cpu_count(), pnum)
     print('# parallel process number: ', pnum)
 
     # -type f: only find files, no directories
@@ -321,7 +320,7 @@ if __name__ == '__main__':
                         help='specify one pathname, file or directory')
     parser.add_argument('-P',
                         type=int,
-                        default=mp.cpu_count(),
+                        default=os.cpu_count(),
                         metavar='',
                         help='number of parallel processes, '
                              'default is the logical cpu number')

@@ -186,7 +186,7 @@ def _find_xargs(pnum: int, pathname: str,
 
     # -type f: only find files, no directories
     # -maxdepth 1: only if recur is False
-    cmdstr = 'find -L %s %s -type f -print0 | ' \
+    cmdstr = 'find -L %s %s -type f -print0 | shuf | ' \
              'xargs -P%d -I+ -0 python %s %s +' \
              % (pathname,
                 '' if recur else '-maxdepth 1',
